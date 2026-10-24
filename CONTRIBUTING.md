@@ -20,7 +20,7 @@ Short, present-tense summaries: `Add rename dialog to history item`, not `added 
 
 ## Code style
 
-- Kotlin official style (`ktlint`). Run `./gradlew ktlintCheck` before pushing.
+- Kotlin official style. Run `./gradlew lintDebug testDebugUnitTest` before pushing (CI runs the same).
 - Compose: one screen per file, stateless composables where possible, previews for every component.
 - Follow [DESIGN.md](docs/DESIGN.md) for spacing, color and motion. Use the theme tokens, not hard-coded values.
 

@@ -1,0 +1,5 @@
+<resources>
+    <color name="window_background">#F2F2F7</color>
+    <color name="launcher_background">#FFFFFF</color>
+    <color name="launcher_accent">#0A84FF</color>
+</resources>
