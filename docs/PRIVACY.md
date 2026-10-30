@@ -20,7 +20,7 @@ The app uses the camera only to read QR codes while the Scan screen is open. Ima
 QRCache connects to the internet only when:
 
 - You open a link from a scan.
-- You turn on **Fetch page titles for links** in Settings. The app then makes one request to each newly scanned link to read its page title.
+- You turn on **Fetch page titles for links** in Settings (off by default). The app then loads each newly scanned web link once, over a secure connection, to read its page title. Nothing else is sent, and no cookies or account details are included.
 
 ## What we don't do
 

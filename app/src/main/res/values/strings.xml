@@ -88,6 +88,8 @@
     <string name="settings_auto_open_detail">Opens a scanned link right away</string>
     <string name="settings_in_app_browser">Open links inside QRCache</string>
     <string name="settings_in_app_browser_detail">Off uses your default browser app</string>
+    <string name="settings_fetch_titles">Fetch page titles for links</string>
+    <string name="settings_fetch_titles_detail">Loads each new link once to name it. Off keeps QRCache offline.</string>
     <string name="settings_history">History</string>
     <string name="settings_export_json">Export history (JSON)</string>
     <string name="settings_export_csv">Export history (CSV for spreadsheets)</string>

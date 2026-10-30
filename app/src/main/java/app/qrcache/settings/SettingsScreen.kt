@@ -154,6 +154,13 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     checked = settings.inAppBrowser,
                     onCheckedChange = { scope.launch { settingsRepo.setInAppBrowser(it) } },
                 )
+                RowDivider()
+                ToggleRow(
+                    label = stringResource(R.string.settings_fetch_titles),
+                    detail = stringResource(R.string.settings_fetch_titles_detail),
+                    checked = settings.fetchTitles,
+                    onCheckedChange = { scope.launch { settingsRepo.setFetchTitles(it) } },
+                )
             }
 
             SettingsGroup(header = stringResource(R.string.settings_history)) {

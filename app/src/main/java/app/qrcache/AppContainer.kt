@@ -9,12 +9,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.qrcache.data.AppSettings
 import app.qrcache.data.ScanRepository
 import app.qrcache.data.SettingsRepository
+import app.qrcache.data.TitleFetcher
 import app.qrcache.data.db.QRCacheDatabase
 
 /** Creates the app's long-lived objects once. Manual dependency injection. */
 class AppContainer(context: Context) {
     private val database by lazy { QRCacheDatabase.create(context) }
-    val scanRepository by lazy { ScanRepository(database.scanDao()) }
+    val scanRepository by lazy {
+        ScanRepository(
+            dao = database.scanDao(),
+            titles = TitleFetcher(
+                userAgent = "QRCache/${BuildConfig.VERSION_NAME} (Android; +https://github.com/Eros-Byrne/QRCache)",
+            ),
+        )
+    }
     val settingsRepository by lazy { SettingsRepository(context) }
 }
 

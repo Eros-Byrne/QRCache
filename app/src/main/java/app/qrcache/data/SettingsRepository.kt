@@ -19,6 +19,8 @@ data class AppSettings(
     val autoOpenLinks: Boolean = false,
     /** Open links in an in-app browser tab (Custom Tabs) rather than the default browser app. */
     val inAppBrowser: Boolean = true,
+    /** Load each newly scanned link once to name it after the page title. Off keeps the app offline. */
+    val fetchTitles: Boolean = false,
 )
 
 private val Context.settingsStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -31,6 +33,7 @@ class SettingsRepository(context: Context) {
         val haptics = booleanPreferencesKey("haptics")
         val autoOpenLinks = booleanPreferencesKey("auto_open_links")
         val inAppBrowser = booleanPreferencesKey("in_app_browser")
+        val fetchTitles = booleanPreferencesKey("fetch_titles")
     }
 
     val settings: Flow<AppSettings> = store.data.map { p ->
@@ -40,6 +43,7 @@ class SettingsRepository(context: Context) {
             haptics = p[Keys.haptics] ?: defaults.haptics,
             autoOpenLinks = p[Keys.autoOpenLinks] ?: defaults.autoOpenLinks,
             inAppBrowser = p[Keys.inAppBrowser] ?: defaults.inAppBrowser,
+            fetchTitles = p[Keys.fetchTitles] ?: defaults.fetchTitles,
         )
     }
 
@@ -47,4 +51,5 @@ class SettingsRepository(context: Context) {
     suspend fun setHaptics(on: Boolean) = store.edit { it[Keys.haptics] = on }
     suspend fun setAutoOpenLinks(on: Boolean) = store.edit { it[Keys.autoOpenLinks] = on }
     suspend fun setInAppBrowser(on: Boolean) = store.edit { it[Keys.inAppBrowser] = on }
+    suspend fun setFetchTitles(on: Boolean) = store.edit { it[Keys.fetchTitles] = on }
 }

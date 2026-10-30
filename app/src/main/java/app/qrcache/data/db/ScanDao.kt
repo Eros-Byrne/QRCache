@@ -37,6 +37,10 @@ abstract class ScanDao {
     @Query("UPDATE scans SET title = :title, titleIsCustom = :isCustom WHERE id = :id")
     abstract suspend fun setTitle(id: Long, title: String, isCustom: Boolean)
 
+    /** Sets an automatic title, unless the user renamed the scan in the meantime. */
+    @Query("UPDATE scans SET title = :title WHERE id = :id AND titleIsCustom = 0")
+    abstract suspend fun setAutoTitle(id: Long, title: String)
+
     @Query("UPDATE scans SET favorite = :favorite WHERE id = :id")
     abstract suspend fun setFavorite(id: Long, favorite: Boolean)
 
