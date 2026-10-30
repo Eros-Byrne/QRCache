@@ -76,6 +76,25 @@ class ScanRepositoryTest {
         assertFalse(scan.titleIsCustom)
     }
 
+    @Test fun importAddsOnlyNewCodes() = runBlocking {
+        repo.recordScan("https://menu.example")
+        val exported = repo.exportJson()
+
+        // Same file into a fresh history: everything comes back.
+        repo.clearAll()
+        assertEquals(1, repo.importJson(exported))
+        // Importing again adds nothing.
+        assertEquals(0, repo.importJson(exported))
+        assertEquals(1, repo.observeAll().first().size)
+    }
+
+    @Test fun clearAllRemovesEverything() = runBlocking {
+        repo.recordScan("a")
+        repo.recordScan("b")
+        repo.clearAll()
+        assertTrue(repo.observeAll().first().isEmpty())
+    }
+
     @Test fun favoriteDeleteAndUndo() = runBlocking {
         val id = repo.recordScan("hello")
         repo.setFavorite(id, true)

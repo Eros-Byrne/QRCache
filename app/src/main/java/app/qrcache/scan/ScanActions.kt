@@ -36,9 +36,9 @@ fun ScanContent.primaryActionLabel(): Int = when (this) {
     is ScanContent.Text -> R.string.action_copy_text
 }
 
-fun ScanContent.runPrimaryAction(context: Context) {
+fun ScanContent.runPrimaryAction(context: Context, inAppBrowser: Boolean = true) {
     when (this) {
-        is ScanContent.Link -> openLink(context, url)
+        is ScanContent.Link -> openLink(context, url, inAppBrowser)
         is ScanContent.Wifi -> joinWifi(context, this)
         is ScanContent.Contact -> start(
             context,
@@ -110,8 +110,12 @@ fun copyToClipboard(context: Context, text: String, label: String = "QRCache") {
     }
 }
 
-private fun openLink(context: Context, url: String) {
+fun openLink(context: Context, url: String, inAppBrowser: Boolean = true) {
     val uri = Uri.parse(url)
+    if (!inAppBrowser) {
+        start(context, Intent(Intent.ACTION_VIEW, uri))
+        return
+    }
     try {
         CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(context, uri)
     } catch (_: ActivityNotFoundException) {

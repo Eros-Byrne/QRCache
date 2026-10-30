@@ -78,6 +78,32 @@
     <string name="history_empty_message">Codes you scan show up here, so you can open them again later.</string>
     <string name="history_empty_action">Scan your first code</string>
 
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_scanning">Scanning</string>
+    <string name="settings_haptics">Vibrate on scan</string>
+    <string name="settings_auto_open">Open links automatically</string>
+    <string name="settings_auto_open_detail">Opens a scanned link right away</string>
+    <string name="settings_in_app_browser">Open links inside QRCache</string>
+    <string name="settings_in_app_browser_detail">Off uses your default browser app</string>
+    <string name="settings_history">History</string>
+    <string name="settings_export_json">Export history (JSON)</string>
+    <string name="settings_export_csv">Export history (CSV for spreadsheets)</string>
+    <string name="settings_import">Import history</string>
+    <string name="settings_clear">Clear all history</string>
+    <string name="settings_clear_confirm_title">Clear all history?</string>
+    <string name="settings_clear_confirm_message">This deletes every saved scan from this phone. It can\'t be undone.</string>
+    <string name="settings_clear_confirm">Clear</string>
+    <string name="settings_cleared">History cleared</string>
+    <string name="settings_exported">History exported</string>
+    <string name="settings_export_failed">Couldn\'t save the file</string>
+    <plurals name="settings_imported">
+        <item quantity="one">Imported %d scan</item>
+        <item quantity="other">Imported %d scans</item>
+    </plurals>
+    <string name="settings_import_failed">That file isn\'t a QRCache history export</string>
     <string name="settings_about">About</string>
     <string name="settings_version">Version</string>
     <string name="settings_privacy">Privacy policy</string>

@@ -2,7 +2,6 @@ package app.qrcache
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,12 +52,13 @@ fun QRCacheApp() {
 
     // Light status bar icons over the black camera; theme-matched elsewhere.
     val view = LocalView.current
-    val darkTheme = isSystemInDarkTheme()
+    val darkTheme = colors.isDark
     if (!view.isInEditMode) {
         SideEffect {
             val window = view.context.findActivity()?.window ?: return@SideEffect
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-                tab != Tab.Scan && !darkTheme
+            val controller = WindowCompat.getInsetsController(window, view)
+            controller.isAppearanceLightStatusBars = tab != Tab.Scan && !darkTheme
+            controller.isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

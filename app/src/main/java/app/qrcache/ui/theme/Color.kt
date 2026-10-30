@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 /** Color tokens from docs/DESIGN.md. Screens use these, never raw hex values. */
 @Immutable
 data class QRCacheColors(
+    val isDark: Boolean,
     val accent: Color,
     val success: Color,
     val danger: Color,
@@ -18,6 +19,7 @@ data class QRCacheColors(
 )
 
 val LightColors = QRCacheColors(
+    isDark = false,
     accent = Color(0xFF0A84FF),
     success = Color(0xFF30D158),
     danger = Color(0xFFFF3B30),
@@ -30,6 +32,7 @@ val LightColors = QRCacheColors(
 )
 
 val DarkColors = QRCacheColors(
+    isDark = true,
     accent = Color(0xFF409CFF),
     success = Color(0xFF32D74B),
     danger = Color(0xFFFF453A),

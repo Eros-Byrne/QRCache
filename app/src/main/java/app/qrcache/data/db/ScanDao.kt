@@ -43,6 +43,16 @@ abstract class ScanDao {
     @Query("DELETE FROM scans WHERE id = :id")
     abstract suspend fun delete(id: Long)
 
+    @Query("DELETE FROM scans")
+    abstract suspend fun deleteAll()
+
+    @Query("SELECT * FROM scans ORDER BY lastScannedAt DESC")
+    abstract suspend fun getAll(): List<ScanEntity>
+
+    /** Inserts scans whose code isn't saved yet; existing ones are left alone. Returns -1 for skipped rows. */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insertIfNew(scans: List<ScanEntity>): List<Long>
+
     /**
      * Saves a scan. If the same code was scanned before, moves it to the top and bumps its
      * count instead of adding a copy. Returns the scan's id.

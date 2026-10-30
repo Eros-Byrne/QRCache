@@ -65,6 +65,7 @@ import app.qrcache.R
 import app.qrcache.data.db.ScanEntity
 import app.qrcache.detail.ScanDetailSheet
 import app.qrcache.scan.icon
+import app.qrcache.scan.typeLabel
 import app.qrcache.scanRepository
 import app.qrcache.ui.components.EmptyState
 import app.qrcache.ui.components.LargeTitleScaffold
@@ -396,7 +397,8 @@ private fun HistoryRow(scan: ScanEntity, timeLabel: String, onClick: () -> Unit)
                 .background(colors.accent.copy(alpha = 0.12f), Radius.button),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(content.icon, contentDescription = null, tint = colors.accent, modifier = Modifier.size(20.dp))
+            // TalkBack reads the type first: "Link, Breakfast menu, menu.hotel.com, 8:12 AM".
+            Icon(content.icon, contentDescription = stringResource(content.typeLabel), tint = colors.accent, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(Spacing.m))
         Column(Modifier.weight(1f)) {

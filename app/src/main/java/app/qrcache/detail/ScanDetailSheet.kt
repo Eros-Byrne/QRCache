@@ -64,6 +64,7 @@ import app.qrcache.scan.primaryActionLabel
 import app.qrcache.scan.runPrimaryAction
 import app.qrcache.scan.share
 import app.qrcache.scan.typeLabel
+import app.qrcache.appSettings
 import app.qrcache.scanRepository
 import app.qrcache.ui.components.PrimaryButton
 import app.qrcache.ui.components.pressScale
@@ -123,6 +124,7 @@ private fun DetailContent(scan: ScanEntity, onDelete: () -> Unit) {
     val colors = QRCacheTheme.colors
     val context = LocalContext.current
     val repository = scanRepository()
+    val settings = appSettings()
     val scope = rememberCoroutineScope()
     val content = remember(scan.raw) { scan.content }
     var renaming by rememberSaveable { mutableStateOf(false) }
@@ -193,7 +195,7 @@ private fun DetailContent(scan: ScanEntity, onDelete: () -> Unit) {
         Spacer(Modifier.height(Spacing.xl))
         PrimaryButton(
             text = stringResource(content.primaryActionLabel()),
-            onClick = { content.runPrimaryAction(context) },
+            onClick = { content.runPrimaryAction(context, settings.inAppBrowser) },
         )
         Spacer(Modifier.height(Spacing.m))
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.m)) {

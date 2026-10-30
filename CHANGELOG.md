@@ -5,6 +5,9 @@ All notable changes to QRCache are listed here. The format follows [Keep a Chang
 ## [Unreleased]
 
 ### Added
+- Settings (v0.4): theme (System, Light, Dark), vibrate on scan, open links automatically, and open links inside QRCache or in your default browser.
+- Export history as JSON (can be imported back) or CSV (for spreadsheets), import from JSON (skips codes you already have), and clear all history with confirmation.
+- TalkBack reads each History row's type, and settings switches read as one control.
 - History (v0.3): every scan is saved on the device. Rescanning a code moves it to the top and counts it instead of adding a copy.
 - History list grouped by Today, Yesterday, This week and Earlier, with search and filter chips (All, Favorites, Links, Wi-Fi, Text, Other).
 - Swipe left to delete (with Undo), swipe right to favorite.

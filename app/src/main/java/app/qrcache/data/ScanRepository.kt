@@ -36,4 +36,16 @@ class ScanRepository(
     suspend fun delete(scan: ScanEntity) = dao.delete(scan.id)
 
     suspend fun restore(scan: ScanEntity) = dao.restore(scan)
+
+    suspend fun clearAll() = dao.deleteAll()
+
+    suspend fun exportJson(): String = HistoryBackup.toJson(dao.getAll())
+
+    suspend fun exportCsv(): String = HistoryBackup.toCsv(dao.getAll())
+
+    /** Adds scans from a JSON export, skipping codes already saved. Returns how many were added. */
+    suspend fun importJson(json: String): Int {
+        val scans = HistoryBackup.fromJson(json).map { it.copy(id = 0) }
+        return dao.insertIfNew(scans).count { it != -1L }
+    }
 }
