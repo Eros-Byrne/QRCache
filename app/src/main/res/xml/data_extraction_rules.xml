@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+: keep scan history out of cloud backup (see docs/PRIVACY.md).
+    Direct phone-to-phone transfer is still allowed, so history moves to a new phone.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="qrcache.db" />
+        <exclude domain="database" path="qrcache.db-shm" />
+        <exclude domain="database" path="qrcache.db-wal" />
+    </cloud-backup>
+</data-extraction-rules>

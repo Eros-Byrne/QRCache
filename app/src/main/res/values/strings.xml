@@ -44,6 +44,36 @@
     <string name="no_app_found">No app found to open this</string>
     <string name="wifi_password_label">Wi-Fi password</string>
 
+    <string name="history_search">Search</string>
+    <string name="history_search_clear">Clear search</string>
+    <string name="history_no_matches">No matching scans</string>
+    <string name="history_section_today">Today</string>
+    <string name="history_section_yesterday">Yesterday</string>
+    <string name="history_section_this_week">This week</string>
+    <string name="history_section_earlier">Earlier</string>
+    <string name="filter_all">All</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="filter_links">Links</string>
+    <string name="filter_wifi">Wi-Fi</string>
+    <string name="filter_text">Text</string>
+    <string name="filter_other">Other</string>
+    <string name="history_deleted">Scan deleted</string>
+    <string name="undo">Undo</string>
+
+    <string name="detail_scanned_at">Scanned %1$s</string>
+    <plurals name="detail_scan_count">
+        <item quantity="one">Scanned once</item>
+        <item quantity="other">Scanned %d times</item>
+    </plurals>
+    <string name="action_rename">Rename</string>
+    <string name="action_favorite">Add to favorites</string>
+    <string name="action_unfavorite">Remove from favorites</string>
+    <string name="action_delete">Delete</string>
+    <string name="rename_title">Rename scan</string>
+    <string name="rename_hint">Leave empty to use the automatic name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
     <string name="history_empty_title">No scans yet</string>
     <string name="history_empty_message">Codes you scan show up here, so you can open them again later.</string>
     <string name="history_empty_action">Scan your first code</string>

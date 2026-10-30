@@ -18,6 +18,7 @@ import app.qrcache.ui.theme.QRCacheTheme
 fun LargeTitleScaffold(
     title: String,
     modifier: Modifier = Modifier,
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val colors = QRCacheTheme.colors
@@ -27,6 +28,7 @@ fun LargeTitleScaffold(
         containerColor = colors.background,
         // The app's tab bar already handles the bottom inset.
         contentWindowInsets = WindowInsets(0),
+        snackbarHost = snackbarHost,
         topBar = {
             LargeTopAppBar(
                 title = { Text(title) },

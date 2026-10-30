@@ -5,6 +5,11 @@ All notable changes to QRCache are listed here. The format follows [Keep a Chang
 ## [Unreleased]
 
 ### Added
+- History (v0.3): every scan is saved on the device. Rescanning a code moves it to the top and counts it instead of adding a copy.
+- History list grouped by Today, Yesterday, This week and Earlier, with search and filter chips (All, Favorites, Links, Wi-Fi, Text, Other).
+- Swipe left to delete (with Undo), swipe right to favorite.
+- Scan detail sheet with rename, favorite, delete, scan time and scan count. It opens after scanning and from History.
+- Scan history is kept out of cloud backups. Phone-to-phone transfer still moves it.
 - Camera scanning (v0.2): live QR scanning with CameraX and ML Kit (works offline), haptic tap and success animation, flashlight toggle.
 - Scan from image: pick a photo or screenshot and read the code in it.
 - Camera permission flow with a friendly screen and a settings shortcut if access is denied.

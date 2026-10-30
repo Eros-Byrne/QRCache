@@ -8,7 +8,7 @@
 | UI | Jetpack Compose + Material 3 (restyled, see [DESIGN.md](DESIGN.md)) | Fast to build smooth, animated UI |
 | Camera | CameraX | Handles device quirks across old and new phones |
 | QR decoding | ML Kit Barcode Scanning, **bundled** model | Fast, works offline, no download on first use, works without Google Play services |
-| Database | Room (SQLite) with an FTS4 table for search | Reliable local storage, instant full-text search |
+| Database | Room (SQLite) | Reliable local storage |
 | Settings | DataStore (Preferences) | Simple key-value settings |
 | Async | Kotlin Coroutines + Flow | UI updates automatically when history changes |
 | Navigation | Navigation Compose | Three tabs plus a sheet |
@@ -45,20 +45,19 @@ app/src/main/java/app/qrcache/
 ├── MainActivity.kt          Single activity, hosts Compose
 ├── AppContainer.kt          Wires repository, database, settings
 ├── data/
-│   ├── db/                  Room database, DAO, entities, migrations
+│   ├── db/                  Room database, DAO, entity
 │   ├── ScanRepository.kt    Only entry point for reading/writing scans
-│   └── SettingsRepository.kt
+│   └── ScanType.kt
 ├── scan/
-│   ├── ScanScreen.kt
-│   ├── ScanViewModel.kt
-│   ├── QrAnalyzer.kt        CameraX ImageAnalysis → ML Kit
-│   └── ContentParser.kt     Raw text → typed content (URL, Wi-Fi, vCard, …)
+│   ├── ScanScreen.kt        Permission gate, viewfinder, scan from image
+│   ├── CameraPreview.kt     CameraX controller + ML Kit analyzer
+│   ├── ContentParser.kt     Raw text → typed content (URL, Wi-Fi, vCard, …)
+│   └── ScanActions.kt       Open, join Wi-Fi, add contact, share, copy
 ├── history/
 │   ├── HistoryScreen.kt
-│   └── HistoryViewModel.kt
+│   └── HistoryList.kt       Pure grouping, search and filter logic
 ├── detail/
-│   ├── ScanDetailSheet.kt
-│   └── ScanActions.kt       Open, join Wi-Fi, add contact, share, copy
+│   └── ScanDetailSheet.kt   Saved scan: actions, rename, favorite, delete
 ├── settings/
 │   └── SettingsScreen.kt
 └── ui/
@@ -76,15 +75,15 @@ data class ScanEntity(
     val type: ScanType,            // LINK, TEXT, WIFI, CONTACT, EMAIL, PHONE, SMS, GEO, EVENT
     val title: String,             // user-editable display name
     val titleIsCustom: Boolean,    // true once the user renames it
-    val firstScannedAt: Instant,
-    val lastScannedAt: Instant,
+    val firstScannedAt: Long,      // epoch millis
+    val lastScannedAt: Long,
     val scanCount: Int = 1,
     val favorite: Boolean = false,
 )
 ```
 
 - `raw` is unique: rescanning the same code updates `lastScannedAt` and `scanCount` instead of inserting a duplicate.
-- An FTS4 table mirrors `title` and `raw` for search.
+- Search filters the loaded list in memory (title and content), which is instant for thousands of scans. Move to an FTS table if histories ever get much bigger.
 - History is sorted by `lastScannedAt` descending.
 - Schema changes go through Room migrations with exported schemas in `app/schemas/` and a migration test.
 
