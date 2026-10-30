@@ -44,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -68,6 +69,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import app.qrcache.R
+import app.qrcache.detail.ScanDetailSheet
+import app.qrcache.scanRepository
 import app.qrcache.ui.components.EmptyState
 import app.qrcache.ui.theme.Motion
 import app.qrcache.ui.theme.QRCacheTheme
@@ -75,6 +78,7 @@ import app.qrcache.ui.theme.Radius
 import app.qrcache.ui.theme.Spacing
 import app.qrcache.util.findActivity
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 private val ViewfinderSize = 260.dp
@@ -84,21 +88,27 @@ private val ViewfinderSize = 260.dp
 fun ScanScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val view = LocalView.current
+    val repository = scanRepository()
+    val scope = rememberCoroutineScope()
     val debouncer = remember { ScanDebouncer() }
-    var result by remember { mutableStateOf<ScanContent?>(null) }
+    // Set as soon as a code is read, so the next frame doesn't trigger a second save.
+    var busy by remember { mutableStateOf(false) }
+    var resultId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     fun show(raw: String) {
+        if (busy) return
+        busy = true
         view.performHapticFeedback(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
             else HapticFeedbackConstants.VIRTUAL_KEY,
         )
-        result = ContentParser.parse(raw)
+        scope.launch { resultId = repository.recordScan(raw) }
     }
 
     // The camera reports the same code many times a second; only react to new ones.
     fun onCode(raw: String) {
         val isNew = debouncer.accept(raw, SystemClock.elapsedRealtime())
-        if (isNew && result == null) show(raw)
+        if (isNew && resultId == null) show(raw)
     }
 
     val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -110,12 +120,18 @@ fun ScanScreen(modifier: Modifier = Modifier) {
 
     Box(modifier.fillMaxSize().background(Color.Black)) {
         CameraPermissionGate(onPickImage = onPickImage) {
-            CameraScanner(success = result != null, onCode = ::onCode, onPickImage = onPickImage)
+            CameraScanner(success = busy || resultId != null, onCode = ::onCode, onPickImage = onPickImage)
         }
     }
 
-    result?.let { content ->
-        ResultSheet(content = content, onDismiss = { result = null })
+    resultId?.let { id ->
+        ScanDetailSheet(
+            scanId = id,
+            onDismiss = {
+                resultId = null
+                busy = false
+            },
+        )
     }
 }
 

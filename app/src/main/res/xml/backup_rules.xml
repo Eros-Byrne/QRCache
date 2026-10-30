@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 6–11: keep scan history on the device only (see docs/PRIVACY.md). -->
+<full-backup-content>
+    <exclude domain="database" path="qrcache.db" />
+    <exclude domain="database" path="qrcache.db-shm" />
+    <exclude domain="database" path="qrcache.db-wal" />
+</full-backup-content>

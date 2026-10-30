@@ -1,0 +1,91 @@
+package app.qrcache.data
+
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import app.qrcache.data.db.QRCacheDatabase
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
+class ScanRepositoryTest {
+    private lateinit var db: QRCacheDatabase
+    private lateinit var repo: ScanRepository
+    private var now = 1_000L
+
+    @Before fun setUp() {
+        db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), QRCacheDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        repo = ScanRepository(db.scanDao(), clock = { now })
+    }
+
+    @After fun tearDown() = db.close()
+
+    @Test fun newScanIsSavedWithTypeAndDefaultTitle() = runBlocking {
+        val id = repo.recordScan("https://www.menu.hotel.com/breakfast")
+        val scan = repo.observe(id).first()!!
+        assertEquals(ScanType.LINK, scan.type)
+        assertEquals("menu.hotel.com", scan.title)
+        assertFalse(scan.titleIsCustom)
+        assertEquals(1, scan.scanCount)
+        assertEquals(1_000L, scan.firstScannedAt)
+    }
+
+    @Test fun rescanMovesToTopInsteadOfDuplicating() = runBlocking {
+        val menu = repo.recordScan("https://menu.example")
+        now = 2_000
+        repo.recordScan("WIFI:S:Lobby;;")
+        now = 3_000
+        val again = repo.recordScan("https://menu.example")
+
+        assertEquals(menu, again)
+        val all = repo.observeAll().first()
+        assertEquals(2, all.size)
+        assertEquals(menu, all.first().id)
+        assertEquals(2, all.first().scanCount)
+        assertEquals(1_000L, all.first().firstScannedAt)
+        assertEquals(3_000L, all.first().lastScannedAt)
+    }
+
+    @Test fun rescanKeepsCustomTitle() = runBlocking {
+        val id = repo.recordScan("https://menu.example")
+        repo.rename(id, "  Hotel breakfast menu ")
+        repo.recordScan("https://menu.example")
+        val scan = repo.observe(id).first()!!
+        assertEquals("Hotel breakfast menu", scan.title)
+        assertTrue(scan.titleIsCustom)
+    }
+
+    @Test fun blankRenameRestoresDefaultTitle() = runBlocking {
+        val id = repo.recordScan("https://menu.example")
+        repo.rename(id, "Menu")
+        repo.rename(id, "   ")
+        val scan = repo.observe(id).first()!!
+        assertEquals("menu.example", scan.title)
+        assertFalse(scan.titleIsCustom)
+    }
+
+    @Test fun favoriteDeleteAndUndo() = runBlocking {
+        val id = repo.recordScan("hello")
+        repo.setFavorite(id, true)
+        val scan = repo.observe(id).first()!!
+        assertTrue(scan.favorite)
+
+        repo.delete(scan)
+        assertNull(repo.observe(id).first())
+
+        repo.restore(scan)
+        assertEquals(scan, repo.observe(id).first())
+    }
+}
