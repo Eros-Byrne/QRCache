@@ -1,0 +1,5 @@
+First release of QRCache!
+• Scan QR codes with your camera or from a photo
+• Every scan is saved to your history, with search, filters, favorites and rename
+• Smart actions for links, Wi-Fi, contacts, events, locations, phone, SMS and email
+• Light and dark themes, export and import, and no ads or accounts

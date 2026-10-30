@@ -15,8 +15,22 @@ android {
         applicationId = "app.qrcache"
         minSdk = 23
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4.0"
+        versionCode = 5
+        versionName = "1.0.0"
+    }
+
+    signingConfigs {
+        // The upload key comes from environment variables (see docs/RELEASING.md).
+        // It is never stored in the repository.
+        val keystore = System.getenv("QRCACHE_KEYSTORE_FILE")
+        if (!keystore.isNullOrBlank()) {
+            create("upload") {
+                storeFile = file(keystore)
+                storePassword = System.getenv("QRCACHE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("QRCACHE_KEY_ALIAS")
+                keyPassword = System.getenv("QRCACHE_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -24,6 +38,14 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            // Upload key when it is set. Otherwise, with -Pqrcache.testSigning, the debug key,
+            // so CI can hand out an installable release build for testing.
+            signingConfig = signingConfigs.findByName("upload")
+                ?: if (providers.gradleProperty("qrcache.testSigning").isPresent) {
+                    signingConfigs.getByName("debug")
+                } else {
+                    null
+                }
         }
     }
 

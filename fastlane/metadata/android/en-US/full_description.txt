@@ -1,0 +1,38 @@
+Scanned the breakfast menu at your hotel yesterday? Find it again in one tap.
+
+QRCache is a fast, simple QR code scanner that remembers every code you scan, so you never have to hunt for the same code twice.
+
+<b>Scan in a snap</b>
+• Point your camera and it scans instantly, with a gentle tap when it finds a code
+• Scan from a photo or screenshot
+• Flashlight for dark restaurants and hotel rooms
+• Works offline. Codes are read on your phone.
+
+<b>Your history, organized</b>
+• Every scan is saved automatically, newest first
+• Grouped by Today, Yesterday, This week and Earlier
+• Search everything you've scanned
+• Filter by favorites, links, Wi-Fi, text and more
+• Rename codes so they're easy to find ("Hotel breakfast menu")
+• Scanning the same code again moves it to the top instead of making a copy
+• Swipe to favorite or delete, with Undo
+
+<b>Does the right thing with every code</b>
+• Links open in an in-app browser or your default browser
+• Join Wi-Fi networks without typing the password
+• Save contacts, add calendar events, open locations in Maps
+• Call, text or email straight from the code
+• Copy or share anything
+
+<b>Private by design</b>
+• Free, with no ads, no account and no tracking
+• Your history stays on your phone and is kept out of cloud backups
+• Export your history as JSON or CSV, and import it back any time
+• Optional: name links after their web page title (off unless you turn it on)
+
+<b>Feels at home on your phone</b>
+• Clean, modern design with light and dark themes
+• Smooth animations and haptics
+• Works on Android 6.0 and newer
+
+QRCache is open source: https://github.com/Eros-Byrne/QRCache
