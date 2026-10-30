@@ -3,12 +3,20 @@ package app.qrcache.data
 import app.qrcache.data.db.ScanDao
 import app.qrcache.data.db.ScanEntity
 import app.qrcache.scan.ContentParser
+import app.qrcache.scan.ScanContent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 /** The only way the app reads or writes scan history. */
 class ScanRepository(
     private val dao: ScanDao,
     private val clock: () -> Long = System::currentTimeMillis,
+    private val titles: PageTitleSource? = null,
+    /** Outlives screens, so a title lookup finishes even if you leave the Scan tab. */
+    private val backgroundScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) {
     fun observeAll(): Flow<List<ScanEntity>> = dao.observeAll()
 
@@ -18,6 +26,24 @@ class ScanRepository(
     suspend fun recordScan(raw: String): Long {
         val content = ContentParser.parse(raw)
         return dao.recordScan(raw, content.scanType, content.defaultTitle, clock())
+    }
+
+    /**
+     * Replaces a link's automatic name (its domain) with the page's real title.
+     * Never touches a name the user chose, and skips links that already have a fetched title.
+     */
+    suspend fun refreshLinkTitle(id: Long) {
+        val source = titles ?: return
+        val scan = dao.get(id) ?: return
+        if (scan.type != ScanType.LINK || scan.titleIsCustom) return
+        val link = scan.content as? ScanContent.Link ?: return
+        if (scan.title != link.defaultTitle) return
+        val title = source.fetch(link.url) ?: return
+        dao.setAutoTitle(id, title)
+    }
+
+    fun refreshLinkTitleLater(id: Long) {
+        backgroundScope.launch { refreshLinkTitle(id) }
     }
 
     /** Renames a scan. A blank name goes back to the automatic one. */

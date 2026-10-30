@@ -76,6 +76,39 @@ class ScanRepositoryTest {
         assertFalse(scan.titleIsCustom)
     }
 
+    @Test fun linkTitleReplacesDomainButNotCustomNames() = runBlocking {
+        val fetched = mutableListOf<String>()
+        val repo = ScanRepository(db.scanDao(), clock = { now }, titles = { url ->
+            fetched += url
+            "Grand Hotel – Breakfast Menu"
+        })
+        val menu = repo.recordScan("https://menu.hotel.com/breakfast")
+        repo.refreshLinkTitle(menu)
+        assertEquals("Grand Hotel – Breakfast Menu", repo.observe(menu).first()!!.title)
+        assertFalse(repo.observe(menu).first()!!.titleIsCustom)
+
+        // Already has a fetched title: no second download.
+        repo.refreshLinkTitle(menu)
+        assertEquals(1, fetched.size)
+
+        // A name the user chose is never overwritten.
+        val spa = repo.recordScan("https://spa.hotel.com")
+        repo.rename(spa, "My spa")
+        repo.refreshLinkTitle(spa)
+        assertEquals("My spa", repo.observe(spa).first()!!.title)
+
+        // Only links are looked up.
+        repo.refreshLinkTitle(repo.recordScan("hello"))
+        assertEquals(1, fetched.size)
+    }
+
+    @Test fun failedTitleLookupKeepsDomain() = runBlocking {
+        val repo = ScanRepository(db.scanDao(), clock = { now }, titles = { null })
+        val id = repo.recordScan("https://menu.hotel.com")
+        repo.refreshLinkTitle(id)
+        assertEquals("menu.hotel.com", repo.observe(id).first()!!.title)
+    }
+
     @Test fun importAddsOnlyNewCodes() = runBlocking {
         repo.recordScan("https://menu.example")
         val exported = repo.exportJson()

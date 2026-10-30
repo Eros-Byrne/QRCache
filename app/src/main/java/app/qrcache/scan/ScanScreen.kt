@@ -108,8 +108,10 @@ fun ScanScreen(modifier: Modifier = Modifier) {
             )
         }
         scope.launch {
-            resultId = repository.recordScan(raw)
+            val id = repository.recordScan(raw)
+            resultId = id
             val content = ContentParser.parse(raw)
+            if (settings.fetchTitles && content is ScanContent.Link) repository.refreshLinkTitleLater(id)
             if (settings.autoOpenLinks && content is ScanContent.Link) {
                 openLink(context, content.url, settings.inAppBrowser)
             }
