@@ -15,8 +15,8 @@ android {
         applicationId = "app.qrcache"
         minSdk = 23
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
     }
 
     buildTypes {
@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.browser)
+    implementation(libs.androidx.datastore.preferences)
 
     // Camera + on-device QR decoding (bundled model: works offline, no Play services needed)
     implementation(libs.androidx.camera.camera2)

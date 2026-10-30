@@ -70,6 +70,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import app.qrcache.R
 import app.qrcache.detail.ScanDetailSheet
+import app.qrcache.appSettings
 import app.qrcache.scanRepository
 import app.qrcache.ui.components.EmptyState
 import app.qrcache.ui.theme.Motion
@@ -95,14 +96,24 @@ fun ScanScreen(modifier: Modifier = Modifier) {
     var busy by remember { mutableStateOf(false) }
     var resultId by rememberSaveable { mutableStateOf<Long?>(null) }
 
+    val settings = appSettings()
+
     fun show(raw: String) {
         if (busy) return
         busy = true
-        view.performHapticFeedback(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
-            else HapticFeedbackConstants.VIRTUAL_KEY,
-        )
-        scope.launch { resultId = repository.recordScan(raw) }
+        if (settings.haptics) {
+            view.performHapticFeedback(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
+                else HapticFeedbackConstants.VIRTUAL_KEY,
+            )
+        }
+        scope.launch {
+            resultId = repository.recordScan(raw)
+            val content = ContentParser.parse(raw)
+            if (settings.autoOpenLinks && content is ScanContent.Link) {
+                openLink(context, content.url, settings.inAppBrowser)
+            }
+        }
     }
 
     // The camera reports the same code many times a second; only react to new ones.
