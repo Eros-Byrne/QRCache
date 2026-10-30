@@ -26,11 +26,22 @@ jobs:
       - name: Build, lint and unit test
         run: ./gradlew assembleDebug lintDebug testDebugUnitTest
 
+      # Shrunk (R8) release build signed with the runner's debug key, so the
+      # exact code that ships can be installed and tested on a phone.
+      - name: Build release APK for testing
+        run: ./gradlew assembleRelease -Pqrcache.testSigning
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: qrcache-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+
+      - name: Upload release test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: qrcache-release-test-apk
+          path: app/build/outputs/apk/release/*.apk
 
       - name: Upload lint report
         if: failure()

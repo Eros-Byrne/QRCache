@@ -6,7 +6,7 @@ QRCache is a free Android app that scans QR codes and keeps a history of everyth
 
 > You're at a hotel, scan the breakfast menu on the table, and walk away. The next morning you want it again. Open QRCache, and it's right there.
 
-> **Status:** Planning. No app code yet. See the [roadmap](docs/ROADMAP.md).
+> **Status:** v1.0 is ready for the Play Store: scanning, history, settings and export all work. See the [roadmap](docs/ROADMAP.md) for what comes next.
 
 ## Features (v1)
 
@@ -39,6 +39,7 @@ See [docs/FEATURES.md](docs/FEATURES.md) for the full list and what's planned la
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Tech stack, code structure, data model |
 | [ROADMAP.md](docs/ROADMAP.md) | Milestones from first build to iOS |
 | [PRIVACY.md](docs/PRIVACY.md) | Privacy policy (also used for the Play Store listing) |
+| [RELEASING.md](docs/RELEASING.md) | Signing, building and publishing on Google Play |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to build, branch and submit changes |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 

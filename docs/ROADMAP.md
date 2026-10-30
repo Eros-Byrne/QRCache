@@ -24,9 +24,9 @@ Each milestone ends with a build that works end to end.
 - Test on API 23, 26, 29, 33 and latest; Baseline Profile
 
 ## v1.0: Play Store release (free)
-- App icon, screenshots, store listing
+- App icon (with Android 13 themed icon), Play Store icon and feature graphic, screenshots, store listing
 - Privacy policy published ([PRIVACY.md](PRIVACY.md))
-- Signed release bundle, internal → closed → production testing tracks
+- Signed release bundle, internal → closed → production testing tracks ([RELEASING.md](RELEASING.md))
 
 ## v1.1
 - Home screen widget, Quick Settings tile

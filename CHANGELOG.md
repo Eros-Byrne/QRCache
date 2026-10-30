@@ -4,7 +4,14 @@ All notable changes to QRCache are listed here. The format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-30
+
+First Play Store release.
+
 ### Added
+- Release setup: signed bundle and APK from a version tag (see [docs/RELEASING.md](docs/RELEASING.md)), and a shrunk release APK from every CI run for testing.
+- Store listing text, Play Store icon and feature graphic in `fastlane/metadata`.
+- Themed app icon on Android 13 and newer.
 - Optional "Fetch page titles for links" setting (off by default). It names a scanned link after its web page's title, for example "Grand Hotel – Breakfast Menu" instead of "menu.hotel.com". It only fetches over HTTPS, never from local network addresses, at most 64 KB with a 5 s timeout, and it never overwrites a name you chose.
 - Settings (v0.4): theme (System, Light, Dark), vibrate on scan, open links automatically, and open links inside QRCache or in your default browser.
 - Export history as JSON (can be imported back) or CSV (for spreadsheets), import from JSON (skips codes you already have), and clear all history with confirmation.
