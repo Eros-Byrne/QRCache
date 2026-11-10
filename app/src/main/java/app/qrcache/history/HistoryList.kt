@@ -17,6 +17,9 @@ enum class HistorySection { TODAY, YESTERDAY, THIS_WEEK, EARLIER }
 /** Filter chips under the search bar. */
 enum class HistoryFilter { ALL, FAVORITES, LINKS, WIFI, TEXT, OTHER }
 
+/** Segmented control at the top of History: everything, only QR codes, or only barcodes. */
+enum class CodeKind { ALL, QR, BARCODE }
+
 fun sectionFor(timestamp: Long, today: LocalDate, zone: ZoneId): HistorySection {
     val date = Instant.ofEpochMilli(timestamp).atZone(zone).toLocalDate()
     return when {
@@ -27,10 +30,15 @@ fun sectionFor(timestamp: Long, today: LocalDate, zone: ZoneId): HistorySection 
     }
 }
 
-/** Scans that match the search text and the selected chip, in their existing order. */
-fun List<ScanEntity>.filterHistory(query: String, filter: HistoryFilter): List<ScanEntity> {
+/** Scans that match the search text, the selected chip and the code kind, in their existing order. */
+fun List<ScanEntity>.filterHistory(query: String, filter: HistoryFilter, kind: CodeKind = CodeKind.ALL): List<ScanEntity> {
     val q = query.trim()
     return filter { scan ->
+        val matchesKind = when (kind) {
+            CodeKind.ALL -> true
+            CodeKind.QR -> !scan.barcode
+            CodeKind.BARCODE -> scan.barcode
+        }
         val matchesChip = when (filter) {
             HistoryFilter.ALL -> true
             HistoryFilter.FAVORITES -> scan.favorite
@@ -39,7 +47,7 @@ fun List<ScanEntity>.filterHistory(query: String, filter: HistoryFilter): List<S
             HistoryFilter.TEXT -> scan.type == ScanType.TEXT
             HistoryFilter.OTHER -> scan.type !in setOf(ScanType.LINK, ScanType.WIFI, ScanType.TEXT)
         }
-        matchesChip && (
+        matchesKind && matchesChip && (
             q.isEmpty() ||
                 scan.title.contains(q, ignoreCase = true) ||
                 scan.raw.contains(q, ignoreCase = true)

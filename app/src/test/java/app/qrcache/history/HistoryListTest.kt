@@ -23,10 +23,25 @@ class HistoryListTest {
         title: String = raw,
         favorite: Boolean = false,
         at: Long = at(2026, 10, 30),
+        barcode: Boolean = false,
     ) = ScanEntity(
         id = id, raw = raw, type = type, title = title,
-        firstScannedAt = at, lastScannedAt = at, favorite = favorite,
+        firstScannedAt = at, lastScannedAt = at, favorite = favorite, barcode = barcode,
     )
+
+    @Test fun codeKindSeparatesQrCodesFromBarcodes() {
+        val scans = listOf(
+            scan(1, "https://menu.hotel.com", ScanType.LINK),
+            scan(2, "5012345678900", ScanType.TEXT, barcode = true),
+            scan(3, "hello", ScanType.TEXT),
+        )
+        assertEquals(listOf(1L, 2L, 3L), scans.filterHistory("", HistoryFilter.ALL, CodeKind.ALL).map { it.id })
+        assertEquals(listOf(1L, 3L), scans.filterHistory("", HistoryFilter.ALL, CodeKind.QR).map { it.id })
+        assertEquals(listOf(2L), scans.filterHistory("", HistoryFilter.ALL, CodeKind.BARCODE).map { it.id })
+        // Works together with the type chips and search.
+        assertEquals(listOf(3L), scans.filterHistory("", HistoryFilter.TEXT, CodeKind.QR).map { it.id })
+        assertEquals(emptyList<Long>(), scans.filterHistory("hello", HistoryFilter.ALL, CodeKind.BARCODE).map { it.id })
+    }
 
     @Test fun sections() {
         assertEquals(HistorySection.TODAY, sectionFor(at(2026, 10, 30, 0, 1), today, zone))

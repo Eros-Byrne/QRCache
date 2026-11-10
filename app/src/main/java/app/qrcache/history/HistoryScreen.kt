@@ -69,6 +69,7 @@ import app.qrcache.scan.typeLabel
 import app.qrcache.scanRepository
 import app.qrcache.ui.components.EmptyState
 import app.qrcache.ui.components.LargeTitleScaffold
+import app.qrcache.ui.components.SegmentedControl
 import app.qrcache.ui.theme.QRCacheTheme
 import app.qrcache.ui.theme.Radius
 import app.qrcache.ui.theme.Spacing
@@ -85,6 +86,7 @@ fun HistoryScreen(onScanClick: () -> Unit, modifier: Modifier = Modifier) {
     val scans by remember { repository.observeAll() }.collectAsStateWithLifecycle(initialValue = null)
     var query by rememberSaveable { mutableStateOf("") }
     var filter by rememberSaveable { mutableStateOf(HistoryFilter.ALL) }
+    var kind by rememberSaveable { mutableStateOf(CodeKind.ALL) }
     var openId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     val deletedMessage = stringResource(R.string.history_deleted)
@@ -126,6 +128,8 @@ fun HistoryScreen(onScanClick: () -> Unit, modifier: Modifier = Modifier) {
                 onQueryChange = { query = it },
                 filter = filter,
                 onFilterChange = { filter = it },
+                kind = kind,
+                onKindChange = { kind = it },
                 onOpen = { openId = it.id },
                 onFavorite = { scope.launch { repository.setFavorite(it.id, !it.favorite) } },
                 onDelete = { delete(it) },
@@ -151,6 +155,8 @@ private fun HistoryList(
     onQueryChange: (String) -> Unit,
     filter: HistoryFilter,
     onFilterChange: (HistoryFilter) -> Unit,
+    kind: CodeKind,
+    onKindChange: (CodeKind) -> Unit,
     onOpen: (ScanEntity) -> Unit,
     onFavorite: (ScanEntity) -> Unit,
     onDelete: (ScanEntity) -> Unit,
@@ -158,8 +164,8 @@ private fun HistoryList(
 ) {
     val zone = remember { ZoneId.systemDefault() }
     val today = LocalDate.now(zone)
-    val groups = remember(scans, query, filter, today) {
-        scans.filterHistory(query, filter).groupBySection(today, zone)
+    val groups = remember(scans, query, filter, kind, today) {
+        scans.filterHistory(query, filter, kind).groupBySection(today, zone)
     }
 
     LazyColumn(
@@ -168,6 +174,21 @@ private fun HistoryList(
             bottom = contentPadding.calculateBottomPadding() + Spacing.xl,
         ),
     ) {
+        item(key = "kind") {
+            val colors = QRCacheTheme.colors
+            SegmentedControl(
+                options = CodeKind.entries,
+                selected = kind,
+                onSelect = onKindChange,
+                label = { stringResource(it.label) },
+                trackColor = colors.surfaceSecondary,
+                thumbColor = colors.accent,
+                textColor = colors.textPrimary,
+                selectedTextColor = Color.White,
+                fillWidth = true,
+                modifier = Modifier.padding(horizontal = Spacing.screen, vertical = Spacing.xs),
+            )
+        }
         item(key = "search") {
             SearchField(
                 query = query,
@@ -227,6 +248,13 @@ private val HistorySection.label: Int
         HistorySection.YESTERDAY -> R.string.history_section_yesterday
         HistorySection.THIS_WEEK -> R.string.history_section_this_week
         HistorySection.EARLIER -> R.string.history_section_earlier
+    }
+
+private val CodeKind.label: Int
+    get() = when (this) {
+        CodeKind.ALL -> R.string.filter_all
+        CodeKind.QR -> R.string.history_kind_qr
+        CodeKind.BARCODE -> R.string.history_kind_barcode
     }
 
 private val HistoryFilter.label: Int

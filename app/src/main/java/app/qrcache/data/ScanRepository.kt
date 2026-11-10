@@ -22,10 +22,10 @@ class ScanRepository(
 
     fun observe(id: Long): Flow<ScanEntity?> = dao.observe(id)
 
-    /** Saves a freshly scanned code and returns its id. */
-    suspend fun recordScan(raw: String): Long {
+    /** Saves a freshly scanned code and returns its id. [barcode] is true when it was read in Barcode mode. */
+    suspend fun recordScan(raw: String, barcode: Boolean = false): Long {
         val content = ContentParser.parse(raw)
-        return dao.recordScan(raw, content.scanType, content.defaultTitle, clock())
+        return dao.recordScan(raw, content.scanType, content.defaultTitle, clock(), barcode)
     }
 
     /**

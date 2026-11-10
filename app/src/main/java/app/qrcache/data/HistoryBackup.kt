@@ -25,7 +25,8 @@ object HistoryBackup {
                     .put("firstScannedAt", s.firstScannedAt)
                     .put("lastScannedAt", s.lastScannedAt)
                     .put("scanCount", s.scanCount)
-                    .put("favorite", s.favorite),
+                    .put("favorite", s.favorite)
+                    .put("barcode", s.barcode),
             )
         }
         return JSONObject()
@@ -60,12 +61,13 @@ object HistoryBackup {
                 lastScannedAt = last,
                 scanCount = o.optInt("scanCount", 1).coerceAtLeast(1),
                 favorite = o.optBoolean("favorite", false),
+                barcode = o.optBoolean("barcode", false),
             )
         }
     }
 
     fun toCsv(scans: List<ScanEntity>): String = buildString {
-        appendLine("title,content,type,first_scanned,last_scanned,scan_count,favorite")
+        appendLine("title,content,type,first_scanned,last_scanned,scan_count,favorite,code")
         scans.forEach { s ->
             appendLine(
                 listOf(
@@ -76,6 +78,7 @@ object HistoryBackup {
                     Instant.ofEpochMilli(s.lastScannedAt).toString(),
                     s.scanCount.toString(),
                     s.favorite.toString(),
+                    if (s.barcode) "barcode" else "qr",
                 ).joinToString(",") { csvField(it) },
             )
         }
