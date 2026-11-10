@@ -14,17 +14,22 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -49,6 +54,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
@@ -62,9 +68,11 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -82,7 +90,11 @@ import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-private val ViewfinderSize = 260.dp
+/** Square for QR codes, wide and short for barcodes so the stripes fill it. */
+private fun ScanMode.viewfinderSize() = when (this) {
+    ScanMode.QR -> DpSize(260.dp, 260.dp)
+    ScanMode.BARCODE -> DpSize(300.dp, 150.dp)
+}
 
 /** Scan tab: live camera, flashlight, scan from image, and the result sheet. */
 @Composable
@@ -95,6 +107,7 @@ fun ScanScreen(modifier: Modifier = Modifier) {
     // Set as soon as a code is read, so the next frame doesn't trigger a second save.
     var busy by remember { mutableStateOf(false) }
     var resultId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var mode by rememberSaveable { mutableStateOf(ScanMode.QR) }
 
     val settings = appSettings()
 
@@ -125,7 +138,7 @@ fun ScanScreen(modifier: Modifier = Modifier) {
     }
 
     val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) scanImage(context, uri, onFound = ::show)
+        if (uri != null) scanImage(context, uri, mode, onFound = ::show)
     }
     val onPickImage = {
         pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -133,7 +146,13 @@ fun ScanScreen(modifier: Modifier = Modifier) {
 
     Box(modifier.fillMaxSize().background(Color.Black)) {
         CameraPermissionGate(onPickImage = onPickImage) {
-            CameraScanner(success = busy || resultId != null, onCode = ::onCode, onPickImage = onPickImage)
+            CameraScanner(
+                mode = mode,
+                onModeChange = { mode = it },
+                success = busy || resultId != null,
+                onCode = ::onCode,
+                onPickImage = onPickImage,
+            )
         }
     }
 
@@ -149,14 +168,33 @@ fun ScanScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CameraScanner(success: Boolean, onCode: (String) -> Unit, onPickImage: () -> Unit) {
+private fun CameraScanner(
+    mode: ScanMode,
+    onModeChange: (ScanMode) -> Unit,
+    success: Boolean,
+    onCode: (String) -> Unit,
+    onPickImage: () -> Unit,
+) {
     val context = LocalContext.current
     val hasFlash = remember { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH) }
     var torchOn by rememberSaveable { mutableStateOf(false) }
+    val target = mode.viewfinderSize()
+    val viewfinderWidth by animateDpAsState(target.width, Motion.spring(), label = "viewfinderWidth")
+    val viewfinderHeight by animateDpAsState(target.height, Motion.spring(), label = "viewfinderHeight")
+    val viewfinder = DpSize(viewfinderWidth, viewfinderHeight)
 
     Box(Modifier.fillMaxSize()) {
-        CameraPreview(torchOn = torchOn, onCode = onCode, modifier = Modifier.fillMaxSize())
-        ViewfinderOverlay(success = success, modifier = Modifier.fillMaxSize())
+        CameraPreview(mode = mode, torchOn = torchOn, onCode = onCode, modifier = Modifier.fillMaxSize())
+        ViewfinderOverlay(viewfinder = viewfinder, success = success, modifier = Modifier.fillMaxSize())
+
+        ScanModeToggle(
+            mode = mode,
+            onModeChange = onModeChange,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(top = Spacing.s),
+        )
 
         if (hasFlash) {
             IconButton(
@@ -177,11 +215,11 @@ private fun CameraScanner(success: Boolean, onCode: (String) -> Unit, onPickImag
         Column(
             Modifier
                 .align(Alignment.Center)
-                .offset(y = ViewfinderSize / 2 + Spacing.xxl),
+                .offset(y = viewfinder.height / 2 + Spacing.xxl),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                stringResource(R.string.scan_hint),
+                stringResource(if (mode == ScanMode.QR) R.string.scan_hint else R.string.scan_hint_barcode),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
                 textAlign = TextAlign.Center,
@@ -194,6 +232,47 @@ private fun CameraScanner(success: Boolean, onCode: (String) -> Unit, onPickImag
                 .align(Alignment.BottomCenter)
                 .padding(bottom = Spacing.xl),
         )
+    }
+}
+
+/** iOS-style segmented control that switches between QR codes and barcodes. */
+@Composable
+private fun ScanModeToggle(mode: ScanMode, onModeChange: (ScanMode) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .height(36.dp)
+            .background(Color.White.copy(alpha = 0.18f), CircleShape)
+            .padding(3.dp)
+            .selectableGroup(),
+    ) {
+        ScanMode.entries.forEach { option ->
+            val selected = option == mode
+            val background by animateColorAsState(
+                targetValue = if (selected) Color.White else Color.Transparent,
+                animationSpec = Motion.spring(),
+                label = "modeBackground",
+            )
+            val content by animateColorAsState(
+                targetValue = if (selected) Color.Black else Color.White,
+                animationSpec = Motion.spring(),
+                label = "modeContent",
+            )
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .clip(CircleShape)
+                    .background(background)
+                    .selectable(selected = selected, role = Role.RadioButton, onClick = { onModeChange(option) })
+                    .padding(horizontal = Spacing.l),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    stringResource(if (option == ScanMode.QR) R.string.scan_mode_qr else R.string.scan_mode_barcode),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = content,
+                )
+            }
+        }
     }
 }
 
@@ -293,7 +372,7 @@ private fun PermissionNeeded(permanentlyDenied: Boolean, onAllow: () -> Unit, on
 
 /** Dims everything outside the viewfinder and draws its corner brackets. */
 @Composable
-private fun ViewfinderOverlay(success: Boolean, modifier: Modifier = Modifier) {
+private fun ViewfinderOverlay(viewfinder: DpSize, success: Boolean, modifier: Modifier = Modifier) {
     val colors = QRCacheTheme.colors
     val bracketColor by animateColorAsState(
         targetValue = if (success) colors.success else Color.White,
@@ -306,28 +385,28 @@ private fun ViewfinderOverlay(success: Boolean, modifier: Modifier = Modifier) {
         label = "viewfinderScale",
     )
     Canvas(modifier) {
-        val side = ViewfinderSize.toPx() * scale
-        val topLeft = Offset((size.width - side) / 2, (size.height - side) / 2)
+        val box = Size(viewfinder.width.toPx() * scale, viewfinder.height.toPx() * scale)
+        val topLeft = Offset((size.width - box.width) / 2, (size.height - box.height) / 2)
         val radius = Radius.viewfinder.toPx()
 
         val dim = Path().apply {
             fillType = PathFillType.EvenOdd
             addRect(Rect(Offset.Zero, size))
-            addRoundRect(RoundRect(Rect(topLeft, Size(side, side)), CornerRadius(radius)))
+            addRoundRect(RoundRect(Rect(topLeft, box), CornerRadius(radius)))
         }
         drawPath(dim, Color.Black.copy(alpha = 0.45f))
-        drawBrackets(topLeft, side, radius, bracketColor, 5.dp)
+        drawBrackets(topLeft, box, radius, bracketColor, 5.dp)
     }
 }
 
 /** Rounded corner brackets only, no full box. */
-private fun DrawScope.drawBrackets(topLeft: Offset, side: Float, radius: Float, color: Color, strokeWidth: Dp) {
+private fun DrawScope.drawBrackets(topLeft: Offset, box: Size, radius: Float, color: Color, strokeWidth: Dp) {
     val stroke = strokeWidth.toPx()
-    val arm = side * 0.22f
+    val arm = box.minDimension * 0.22f
     val l = topLeft.x
     val t = topLeft.y
-    val r = l + side
-    val b = t + side
+    val r = l + box.width
+    val b = t + box.height
     val arc = Size(radius * 2, radius * 2)
 
     val path = Path().apply {
@@ -354,18 +433,19 @@ private fun DrawScope.drawBrackets(topLeft: Offset, side: Float, radius: Float, 
     drawPath(path, color, style = Stroke(width = stroke, cap = StrokeCap.Round))
 }
 
-private fun scanImage(context: Context, uri: Uri, onFound: (String) -> Unit) {
+private fun scanImage(context: Context, uri: Uri, mode: ScanMode, onFound: (String) -> Unit) {
     val image = try {
         InputImage.fromFilePath(context, uri)
     } catch (_: IOException) {
         Toast.makeText(context, R.string.scan_image_error, Toast.LENGTH_SHORT).show()
         return
     }
-    val scanner = qrScanner()
+    val scanner = scannerFor(mode)
     scanner.process(image)
         .addOnSuccessListener { barcodes ->
             val raw = barcodes.firstNotNullOfOrNull { it.rawValue }
-            if (raw != null) onFound(raw) else Toast.makeText(context, R.string.scan_no_code_in_image, Toast.LENGTH_SHORT).show()
+            val notFound = if (mode == ScanMode.QR) R.string.scan_no_code_in_image else R.string.scan_no_barcode_in_image
+            if (raw != null) onFound(raw) else Toast.makeText(context, notFound, Toast.LENGTH_SHORT).show()
         }
         .addOnFailureListener {
             Toast.makeText(context, R.string.scan_image_error, Toast.LENGTH_SHORT).show()

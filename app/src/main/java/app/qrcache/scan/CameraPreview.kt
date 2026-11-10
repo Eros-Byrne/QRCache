@@ -19,17 +19,34 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 
-/** QR-only ML Kit scanner. Restricting formats makes decoding faster. */
-internal fun qrScanner() = BarcodeScanning.getClient(
-    BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build(),
+/** What the scanner looks for: square QR codes, or the striped barcodes on products and tickets. */
+enum class ScanMode { QR, BARCODE }
+
+/** ML Kit scanner for one [ScanMode]. Restricting formats makes decoding faster. */
+internal fun scannerFor(mode: ScanMode) = BarcodeScanning.getClient(
+    when (mode) {
+        ScanMode.QR -> BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        ScanMode.BARCODE -> BarcodeScannerOptions.Builder().setBarcodeFormats(
+            Barcode.FORMAT_EAN_13,
+            Barcode.FORMAT_EAN_8,
+            Barcode.FORMAT_UPC_A,
+            Barcode.FORMAT_UPC_E,
+            Barcode.FORMAT_CODE_128,
+            Barcode.FORMAT_CODE_39,
+            Barcode.FORMAT_CODE_93,
+            Barcode.FORMAT_CODABAR,
+            Barcode.FORMAT_ITF,
+        )
+    }.build(),
 )
 
 /**
- * Live camera preview that reports every decoded QR value through [onCode].
+ * Live camera preview that reports every decoded value for [mode] through [onCode].
  * Binds to the screen's lifecycle, so the camera stops when the app is in the background.
  */
 @Composable
 fun CameraPreview(
+    mode: ScanMode,
     torchOn: Boolean,
     onCode: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -40,19 +57,23 @@ fun CameraPreview(
     val controller = remember { LifecycleCameraController(context) }
 
     DisposableEffect(lifecycleOwner) {
-        val executor = ContextCompat.getMainExecutor(context)
-        val scanner = qrScanner()
         controller.imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+        controller.bindToLifecycle(lifecycleOwner)
+        onDispose { controller.unbind() }
+    }
+
+    // Swapping only the analyzer keeps the preview running while the mode changes.
+    DisposableEffect(mode) {
+        val executor = ContextCompat.getMainExecutor(context)
+        val scanner = scannerFor(mode)
         controller.setImageAnalysisAnalyzer(
             executor,
             MlKitAnalyzer(listOf(scanner), ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL, executor) { result ->
                 result.getValue(scanner)?.firstNotNullOfOrNull { it.rawValue }?.let(currentOnCode)
             },
         )
-        controller.bindToLifecycle(lifecycleOwner)
         onDispose {
             controller.clearImageAnalysisAnalyzer()
-            controller.unbind()
             scanner.close()
         }
     }

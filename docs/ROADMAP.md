@@ -32,7 +32,7 @@ Each milestone ends with a build that works end to end.
 
 ## v1.1
 - Home screen widget, Quick Settings tile
-- Barcode formats beyond QR
+- Barcode formats beyond QR ✓
 - Notes on scans
 
 ## v1.2
