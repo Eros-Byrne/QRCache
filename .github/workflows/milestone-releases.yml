@@ -31,12 +31,18 @@ jobs:
       # v0.x ships the debug build (the build that was tested at the time);
       # v1.0 and later ship the shrunk release build. A fix commit's build changes are applied
       # on top: v1.0.0 takes the ML Kit keep rules that stop it crashing on launch.
+      #
+      # HEAD as the commit means "the commit this workflow runs on", for the newest
+      # release. GitHub refuses to let a workflow tag an older commit whose workflow
+      # files differ from the current ones (HTTP 403), so the newest release is built
+      # from, and tagged at, the current commit. Once its tag exists, later runs
+      # rebuild it from the tag, not from whatever main has become.
       MILESTONES: |
         0.2.0|8a64d0a513764e4362845aa91a6af104207bebdf|debug|v0.2 · Camera scanning|
         0.3.0|7df7b75d88e80af8f02c2e9f4d864a5fc35c4c9f|debug|v0.3 · Scan history|
         0.4.0|7232fc411621bdec65f24cef3fd4f83f4897bcb3|debug|v0.4 · Settings and export|
         1.0.0|0d2c49a177d898bf6e32bd9636a06fd65e41bc17|release|v1.0 · First full release|0d7411d03a654276952e119ce5f6732edcfdacd4
-        1.1.0|d63bab6ee07aa2f04efaa977537bdfb7572ce987|release|v1.1 · Barcode scanning|
+        1.1.0|HEAD|release|v1.1 · Barcode scanning|
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,9 +98,16 @@ jobs:
 
           while IFS='|' read -r version sha build title fix; do
             [ -z "$version" ] && continue
+            if [ "$sha" = HEAD ]; then
+              sha="$(git rev-parse -q --verify "refs/tags/v$version^{commit}" || echo "$head")"
+            fi
             echo "::group::v$version ($build build of ${sha:0:7})"
             git checkout --quiet --force "$sha"
             git clean -fdxq
+            if ! grep -q "versionName = \"$version\"" app/build.gradle.kts && [[ "$version" != 0.* ]]; then
+              echo "::error::${sha:0:7} is not version $version (check versionName in app/build.gradle.kts)."
+              exit 1
+            fi
             if [ -n "$fix" ]; then
               echo "Applying the build fix from ${fix:0:7}"
               git show "$fix" -- app/proguard-rules.pro app/build.gradle.kts | git apply
@@ -176,6 +189,7 @@ jobs:
           while IFS='|' read -r version sha build title fix; do
             [ -z "$version" ] && continue
             tag="v$version"
+            [ "$sha" = HEAD ] && sha="$GITHUB_SHA"
             latest=false
             [ "$version" = 1.1.0 ] && latest=true
             if gh release view "$tag" > /dev/null 2>&1; then
