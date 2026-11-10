@@ -6,13 +6,18 @@ APKs for each version are on the [Releases page](https://github.com/Eros-Byrne/Q
 
 ## [Unreleased]
 
-### Fixed
-- CI now opens the release build on an emulator, so a crash on launch can't ship again.
+## [1.1.0] - 2026-11-10
+
+Barcode scanning, with History that keeps QR codes and barcodes apart.
 
 ### Added
-- Barcode scanning: a "QR code / Barcode" switch at the top of the camera reads product and ticket barcodes (EAN, UPC, Code 128, Code 39, Code 93, Codabar, ITF), from the camera or from an image. Barcode scans are saved to History, and a "All / QR codes / Barcodes" switch at the top of History shows them separately. JSON and CSV exports record which kind each scan is.
+- Barcode scanning: a "QR code / Barcode" switch at the top of the camera reads product and ticket barcodes (EAN, UPC, Code 128, Code 39, Code 93, Codabar, ITF), from the camera or from an image. Barcode scans are saved to History like QR codes.
+- An "All / QR codes / Barcodes" switch at the top of History shows them separately. Everything already in your history counts as QR codes. JSON and CSV exports record which kind each scan is.
 - Install guide, screenshots and badges in the README.
-- GitHub Releases with an APK for v0.2.0, v0.3.0, v0.4.0 and v1.0.0.
+- GitHub Releases with an APK for every version from v0.2.0.
+
+### Fixed
+- CI now opens the release build on an emulator, so a crash on launch can't ship again.
 
 ## [1.0.0] - 2026-10-30
 
@@ -67,7 +72,8 @@ Project setup.
 - GitHub Actions CI: build, lint, unit tests, downloadable debug APK.
 - Project docs: README, features, design, architecture, roadmap, privacy policy, contributing guide.
 
-[Unreleased]: https://github.com/Eros-Byrne/QRCache/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Eros-Byrne/QRCache/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Eros-Byrne/QRCache/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Eros-Byrne/QRCache/releases/tag/v1.0.0
 [0.4.0]: https://github.com/Eros-Byrne/QRCache/releases/tag/v0.4.0
 [0.3.0]: https://github.com/Eros-Byrne/QRCache/releases/tag/v0.3.0

@@ -1,6 +1,6 @@
 name: Milestone releases
 
-# Publishes a GitHub Release for each milestone (v0.2.0 to v1.0.0), tagged at its merge
+# Publishes a GitHub Release for each milestone (v0.2.0 to v1.1.0), tagged at its merge
 # commit, with notes from CHANGELOG.md and an installable APK.
 #
 # Run it by hand from the Actions tab. It is safe to run again: existing releases get
@@ -29,13 +29,14 @@ jobs:
     env:
       # version | merge commit | build | release title | fix commit (optional)
       # v0.x ships the debug build (the build that was tested at the time);
-      # v1.0 ships the shrunk release build. A fix commit's build changes are applied
+      # v1.0 and later ship the shrunk release build. A fix commit's build changes are applied
       # on top: v1.0.0 takes the ML Kit keep rules that stop it crashing on launch.
       MILESTONES: |
         0.2.0|8a64d0a513764e4362845aa91a6af104207bebdf|debug|v0.2 · Camera scanning|
         0.3.0|7df7b75d88e80af8f02c2e9f4d864a5fc35c4c9f|debug|v0.3 · Scan history|
         0.4.0|7232fc411621bdec65f24cef3fd4f83f4897bcb3|debug|v0.4 · Settings and export|
         1.0.0|0d2c49a177d898bf6e32bd9636a06fd65e41bc17|release|v1.0 · First full release|0d7411d03a654276952e119ce5f6732edcfdacd4
+        1.1.0|d63bab6ee07aa2f04efaa977537bdfb7572ce987|release|v1.1 · Barcode scanning|
     steps:
       - uses: actions/checkout@v4
         with:
@@ -123,7 +124,7 @@ jobs:
               echo "### Install"
               echo "Download **QRCache-v$version.apk** below and open it on your Android phone (Android 6.0 or newer)."
               echo "Step-by-step guide: [Installing the APK](https://github.com/Eros-Byrne/QRCache#install)."
-              if [ "$version" != 1.0.0 ]; then
+              if [[ "$version" == 0.* ]]; then
                 echo
                 echo "> This is an early milestone, kept to show how the app grew. For everyday use, get the [latest release](https://github.com/Eros-Byrne/QRCache/releases/latest)."
               fi
@@ -145,8 +146,8 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      # Nothing is published if the v1.0.0 APK crashes when opened.
-      - name: Open v1.0.0 on an emulator
+      # Nothing is published if a release build crashes when opened.
+      - name: Open v1.0.0 and v1.1.0 on an emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -154,7 +155,9 @@ jobs:
           target: google_apis
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back emulated
           disable-animations: true
-          script: bash .github/scripts/launch-test.sh "$RUNNER_TEMP/out/QRCache-v1.0.0.apk"
+          script: |
+            bash .github/scripts/launch-test.sh "$RUNNER_TEMP/out/QRCache-v1.0.0.apk"
+            bash .github/scripts/launch-test.sh "$RUNNER_TEMP/out/QRCache-v1.1.0.apk"
 
       - name: Upload APKs and notes
         uses: actions/upload-artifact@v4
@@ -169,12 +172,12 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/out"
-          # Oldest first, so v1.0.0 ends up as the latest release.
+          # Oldest first, so v1.1.0 ends up as the latest release.
           while IFS='|' read -r version sha build title fix; do
             [ -z "$version" ] && continue
             tag="v$version"
             latest=false
-            [ "$version" = 1.0.0 ] && latest=true
+            [ "$version" = 1.1.0 ] && latest=true
             if gh release view "$tag" > /dev/null 2>&1; then
               gh release edit "$tag" --title "$title" --notes-file "$out/notes-$version.md" --latest="$latest"
               gh release upload "$tag" "$out/QRCache-v$version.apk" --clobber

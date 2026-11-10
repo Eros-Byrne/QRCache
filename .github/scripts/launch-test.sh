@@ -8,8 +8,17 @@ adb install -r "$apk"
 adb shell pm grant app.qrcache android.permission.CAMERA
 adb shell am start -W -n app.qrcache/.MainActivity
 sleep 15
+# The emulator's adb link can drop for a moment ("device offline"). Wait for it, so a
+# lost connection isn't mistaken for the app having closed.
+adb wait-for-device
 adb logcat -d > logcat.txt
-if grep -q "FATAL EXCEPTION" logcat.txt || ! adb shell pidof app.qrcache; then
+running=false
+for _ in 1 2 3; do
+  if adb shell pidof app.qrcache; then running=true; break; fi
+  adb wait-for-device
+  sleep 2
+done
+if grep -q "FATAL EXCEPTION" logcat.txt || [ "$running" != true ]; then
   echo "::error::The release build crashed on launch."
   grep -A40 "FATAL EXCEPTION" logcat.txt | sed 's/^.*AndroidRuntime: //' > crash.txt
   mapping=app/build/outputs/mapping/release/mapping.txt
