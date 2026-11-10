@@ -1,0 +1,3 @@
+• Scan barcodes too: switch between QR code and Barcode at the top of the camera
+• Reads product and ticket barcodes (EAN, UPC, Code 128 and more), from the camera or a photo
+• History can show all scans, only QR codes, or only barcodes
