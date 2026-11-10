@@ -62,14 +62,21 @@ abstract class ScanDao {
      * count instead of adding a copy. Returns the scan's id.
      */
     @Transaction
-    open suspend fun recordScan(raw: String, type: ScanType, defaultTitle: String, now: Long): Long {
+    open suspend fun recordScan(raw: String, type: ScanType, defaultTitle: String, now: Long, barcode: Boolean = false): Long {
         val existing = findByRaw(raw)
         if (existing != null) {
             update(existing.copy(lastScannedAt = now, scanCount = existing.scanCount + 1))
             return existing.id
         }
         return insert(
-            ScanEntity(raw = raw, type = type, title = defaultTitle, firstScannedAt = now, lastScannedAt = now),
+            ScanEntity(
+                raw = raw,
+                type = type,
+                title = defaultTitle,
+                firstScannedAt = now,
+                lastScannedAt = now,
+                barcode = barcode,
+            ),
         )
     }
 }

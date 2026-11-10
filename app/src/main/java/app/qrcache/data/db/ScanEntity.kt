@@ -1,5 +1,6 @@
 package app.qrcache.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -21,6 +22,8 @@ data class ScanEntity(
     val lastScannedAt: Long,
     val scanCount: Int = 1,
     val favorite: Boolean = false,
+    /** Read in Barcode mode (EAN, UPC, Code 128…) rather than as a QR code. */
+    @ColumnInfo(defaultValue = "0") val barcode: Boolean = false,
 ) {
     val content: ScanContent get() = ContentParser.parse(raw)
 }

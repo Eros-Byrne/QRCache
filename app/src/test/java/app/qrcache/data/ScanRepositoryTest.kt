@@ -42,6 +42,13 @@ class ScanRepositoryTest {
         assertEquals(1_000L, scan.firstScannedAt)
     }
 
+    @Test fun scansRememberWhetherTheyWereBarcodes() = runBlocking {
+        val qr = repo.observe(repo.recordScan("https://menu.example")).first()!!
+        val product = repo.observe(repo.recordScan("5012345678900", barcode = true)).first()!!
+        assertFalse(qr.barcode)
+        assertTrue(product.barcode)
+    }
+
     @Test fun rescanMovesToTopInsteadOfDuplicating() = runBlocking {
         val menu = repo.recordScan("https://menu.example")
         now = 2_000

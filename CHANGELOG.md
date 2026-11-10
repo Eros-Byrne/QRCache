@@ -10,7 +10,7 @@ APKs for each version are on the [Releases page](https://github.com/Eros-Byrne/Q
 - The v1.0.0 APK closed straight away ("QRCache keeps stopping"). The release build's code shrinker broke the barcode reader library; it now keeps it intact, and CI opens the release build on an emulator so this can't slip through again.
 
 ### Added
-- Barcode scanning: a "QR code / Barcode" switch at the top of the camera reads product and ticket barcodes (EAN, UPC, Code 128, Code 39, Code 93, Codabar, ITF), from the camera or from an image. Barcode scans are saved to History like QR codes.
+- Barcode scanning: a "QR code / Barcode" switch at the top of the camera reads product and ticket barcodes (EAN, UPC, Code 128, Code 39, Code 93, Codabar, ITF), from the camera or from an image. Barcode scans are saved to History, and a "All / QR codes / Barcodes" switch at the top of History shows them separately. JSON and CSV exports record which kind each scan is.
 - Install guide, screenshots and badges in the README.
 - GitHub Releases with an APK for v0.2.0, v0.3.0, v0.4.0 and v1.0.0.
 

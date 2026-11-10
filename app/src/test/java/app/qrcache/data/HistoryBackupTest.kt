@@ -22,10 +22,14 @@ class HistoryBackupTest {
         id = 8, raw = "WIFI:S:Lobby;P:x;;", type = ScanType.WIFI, title = "Lobby",
         firstScannedAt = 2_000, lastScannedAt = 2_000,
     )
+    private val product = ScanEntity(
+        id = 9, raw = "5012345678900", type = ScanType.TEXT, title = "5012345678900",
+        firstScannedAt = 3_000, lastScannedAt = 3_000, barcode = true,
+    )
 
     @Test fun jsonRoundTripKeepsEverythingButIds() {
-        val back = HistoryBackup.fromJson(HistoryBackup.toJson(listOf(menu, wifi)))
-        assertEquals(listOf(menu.copy(id = 0), wifi.copy(id = 0)), back)
+        val back = HistoryBackup.fromJson(HistoryBackup.toJson(listOf(menu, wifi, product)))
+        assertEquals(listOf(menu.copy(id = 0), wifi.copy(id = 0), product.copy(id = 0)), back)
     }
 
     @Test fun importRecomputesTypeAndDefaultTitles() {
@@ -42,6 +46,8 @@ class HistoryBackupTest {
         assertEquals("+15550100", scans[0].title)
         assertEquals(9L, scans[0].firstScannedAt)
         assertEquals(1, scans[0].scanCount)
+        // Exports from before barcode scanning only had QR codes.
+        assertFalse(scans[0].barcode)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -57,9 +63,10 @@ class HistoryBackupTest {
     @Test fun csvHasHeaderAndQuotesWhenNeeded() {
         val csv = HistoryBackup.toCsv(listOf(menu.copy(title = "Menu, \"breakfast\"")))
         val lines = csv.trimEnd().lines()
-        assertEquals("title,content,type,first_scanned,last_scanned,scan_count,favorite", lines[0])
+        assertEquals("title,content,type,first_scanned,last_scanned,scan_count,favorite,code", lines[0])
         assertTrue(lines[1].startsWith("\"Menu, \"\"breakfast\"\"\",https://menu.hotel.com,link,1970-01-01T00:00:01Z,"))
-        assertTrue(lines[1].endsWith(",3,true"))
+        assertTrue(lines[1].endsWith(",3,true,qr"))
+        assertTrue(HistoryBackup.toCsv(listOf(product)).trimEnd().lines()[1].endsWith(",barcode"))
     }
 
     @Test fun csvDefusesSpreadsheetFormulas() {
