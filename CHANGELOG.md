@@ -7,7 +7,7 @@ APKs for each version are on the [Releases page](https://github.com/Eros-Byrne/Q
 ## [Unreleased]
 
 ### Fixed
-- The v1.0.0 APK closed straight away ("QRCache keeps stopping"). The release build's code shrinker broke the barcode reader library; it now keeps it intact, and CI opens the release build on an emulator so this can't slip through again.
+- CI now opens the release build on an emulator, so a crash on launch can't ship again.
 
 ### Added
 - Barcode scanning: a "QR code / Barcode" switch at the top of the camera reads product and ticket barcodes (EAN, UPC, Code 128, Code 39, Code 93, Codabar, ITF), from the camera or from an image. Barcode scans are saved to History like QR codes.
@@ -17,6 +17,9 @@ APKs for each version are on the [Releases page](https://github.com/Eros-Byrne/Q
 ## [1.0.0] - 2026-10-30
 
 The first full release: everything from the earlier milestones, plus link titles and Play Store prep.
+
+### Fixed
+- 2026-11-10: the APK was rebuilt because the first one closed straight away ("QRCache keeps stopping"). The release build's code shrinker broke the barcode reader library; it now keeps it intact. If you installed v1.0.0 before this date, uninstall it and install the new APK.
 
 ### Added
 - Optional "Fetch page titles for links" setting (off by default). It names a scanned link after its web page's title, for example "Grand Hotel – Breakfast Menu" instead of "menu.hotel.com". It only fetches over HTTPS, never from local network addresses, at most 64 KB with a 5 s timeout, and it never overwrites a name you chose.
