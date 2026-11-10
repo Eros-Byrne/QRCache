@@ -37,7 +37,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Upload key when it is set. Otherwise, with -Pqrcache.testSigning, the debug key,
             // so CI can hand out an installable release build for testing.
             signingConfig = signingConfigs.findByName("upload")
