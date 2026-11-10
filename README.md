@@ -39,7 +39,7 @@ Most scanners forget a code the moment you close them. QRCache saves every scan 
 | | |
 |---|---|
 | ⚡ **Instant scanning** | The camera is ready as soon as the app opens. Works offline, with a haptic tap and the flashlight a tap away. |
-| 📦 **Barcodes too** | Flip the QR code / Barcode switch on the camera to read product and ticket barcodes (EAN, UPC, Code 128 and more). |
+| 📦 **Barcodes too** | Flip the QR code / Barcode switch on the camera to read product and ticket barcodes (EAN, UPC, Code 128 and more). Coming in the next release; build from source to try it now. |
 | 🖼️ **Scan from an image** | Pick a photo or screenshot and QRCache reads the code in it. |
 | 🕘 **Automatic history** | Every scan is saved with the date and time, grouped by Today, Yesterday, This week and Earlier. Rescanning moves a code to the top instead of adding a copy. |
 | 🔎 **Search and filters** | Find a scan by name, content or website, or filter by Favorites, Links, Wi-Fi, Text and more. |
