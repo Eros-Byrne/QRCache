@@ -6,14 +6,18 @@
     <string name="tab_settings">Settings</string>
 
     <string name="scan_hint">Point at a QR code</string>
+    <string name="scan_hint_barcode">Point at a barcode</string>
+    <string name="scan_mode_qr">QR code</string>
+    <string name="scan_mode_barcode">Barcode</string>
     <string name="scan_from_image">Scan from image</string>
     <string name="scan_torch_on">Turn on flashlight</string>
     <string name="scan_torch_off">Turn off flashlight</string>
     <string name="scan_no_code_in_image">No QR code found in that image</string>
+    <string name="scan_no_barcode_in_image">No barcode found in that image</string>
     <string name="scan_image_error">Couldn\'t read that image</string>
 
     <string name="camera_permission_title">Camera access needed</string>
-    <string name="camera_permission_message">QRCache uses the camera only to read QR codes. Nothing is recorded or sent anywhere.</string>
+    <string name="camera_permission_message">QRCache uses the camera only to read QR codes and barcodes. Nothing is recorded or sent anywhere.</string>
     <string name="camera_permission_allow">Allow camera</string>
     <string name="camera_permission_settings">Open settings</string>
 
