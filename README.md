@@ -39,7 +39,7 @@ Most scanners forget a code the moment you close them. QRCache saves every scan 
 | | |
 |---|---|
 | ⚡ **Instant scanning** | The camera is ready as soon as the app opens. Works offline, with a haptic tap and the flashlight a tap away. |
-| 📦 **Barcodes too** | Flip the QR code / Barcode switch on the camera to read product and ticket barcodes (EAN, UPC, Code 128 and more). Coming in the next release; build from source to try it now. |
+| 📦 **Barcodes too** | Flip the QR code / Barcode switch on the camera to read product and ticket barcodes (EAN, UPC, Code 128 and more). History has an All / QR codes / Barcodes switch to keep them apart. |
 | 🖼️ **Scan from an image** | Pick a photo or screenshot and QRCache reads the code in it. |
 | 🕘 **Automatic history** | Every scan is saved with the date and time, grouped by Today, Yesterday, This week and Earlier. Rescanning moves a code to the top instead of adding a copy. |
 | 🔎 **Search and filters** | Find a scan by name, content or website, or filter by Favorites, Links, Wi-Fi, Text and more. |
@@ -101,7 +101,8 @@ To build a signed release yourself, see [docs/RELEASING.md](docs/RELEASING.md).
 
 | Version | What it added |
 |---|---|
-| [**v1.0**](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.0.0) | Optional page titles for links, themed icon, release builds and store listing |
+| [**v1.1**](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.1.0) | Barcode scanning with a QR code / Barcode switch on the camera, and an All / QR codes / Barcodes switch in History |
+| [v1.0](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.0.0) | Optional page titles for links, themed icon, release builds and store listing |
 | [v0.4](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.4.0) | Settings, theme, export and import, clear history |
 | [v0.3](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.3.0) | Scan history with search, filters, rename, favorites and swipe actions |
 | [v0.2](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.2.0) | Camera scanning, scan from image, smart actions |
