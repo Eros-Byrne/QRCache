@@ -64,6 +64,17 @@ Every CI run also uploads `qrcache-release-test-apk`. It is the release build (R
 one on Play) signed with a throwaway debug key. Install it on a phone to check nothing broke in
 shrinking. Uninstall other QRCache builds first, since each is signed with a different key.
 
+### GitHub Releases for sideloading
+
+The **Release** workflow above attaches the signed APK to the GitHub release for each new tag, so
+people can install it without the Play Store. It needs the four `QRCACHE_*` secrets.
+
+The earlier milestones (v0.2.0 to v1.0.0) were published by the **Milestone releases** workflow
+(`.github/workflows/milestone-releases.yml`, run by hand from the Actions tab). It tags each
+milestone's merge commit, takes the notes from `CHANGELOG.md`, and attaches an APK. It signs with
+the upload key when the secrets are set, and with a one-off key otherwise. Running it again
+replaces the notes and APKs, which is how to re-sign them with the upload key once you have one.
+
 ## 3. Store listing
 
 | Play Console field | Source |

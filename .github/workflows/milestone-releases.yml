@@ -1,0 +1,163 @@
+name: Milestone releases
+
+# Publishes a GitHub Release for each milestone (v0.2.0 to v1.0.0), tagged at its merge
+# commit, with notes from CHANGELOG.md and an installable APK.
+#
+# Run it by hand from the Actions tab. It is safe to run again: existing releases get
+# their notes and APK replaced. On a pull request it only builds the APKs and uploads
+# them as a workflow artifact, so nothing is published.
+#
+# Signing: if the QRCACHE_* upload key secrets are set (see docs/RELEASING.md), the APKs
+# are signed with that key. Otherwise the run makes a one-off key. Either way every APK
+# in a run shares one key, so each milestone installs over the one before it.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: [".github/workflows/milestone-releases.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: milestone-releases
+  cancel-in-progress: false
+
+jobs:
+  releases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # version | merge commit | build | release title
+      # v0.x ships the debug build (the build that was tested at the time);
+      # v1.0 ships the shrunk release build.
+      MILESTONES: |
+        0.2.0|8a64d0a513764e4362845aa91a6af104207bebdf|debug|v0.2 · Camera scanning
+        0.3.0|7df7b75d88e80af8f02c2e9f4d864a5fc35c4c9f|debug|v0.3 · Scan history
+        0.4.0|7232fc411621bdec65f24cef3fd4f83f4897bcb3|debug|v0.4 · Settings and export
+        1.0.0|0d2c49a177d898bf6e32bd9636a06fd65e41bc17|release|v1.0 · First full release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.QRCACHE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.QRCACHE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.QRCACHE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.QRCACHE_KEY_PASSWORD }}
+        run: |
+          ks="$RUNNER_TEMP/sign.jks"
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Signing with the upload key from the repository secrets."
+            echo "$KEYSTORE_BASE64" | base64 --decode > "$ks"
+            {
+              echo "SIGN_KS_PASS=$KEYSTORE_PASSWORD"
+              echo "SIGN_ALIAS=$KEY_ALIAS"
+              echo "SIGN_KEY_PASS=$KEY_PASSWORD"
+            } >> "$GITHUB_ENV"
+          else
+            echo "::notice::No upload key secrets set, so this run signs with a one-off key."
+            pass="$(openssl rand -hex 24)"
+            echo "::add-mask::$pass"
+            keytool -genkeypair -keystore "$ks" -storetype PKCS12 -alias qrcache \
+              -keyalg RSA -keysize 4096 -validity 10000 \
+              -storepass "$pass" -keypass "$pass" -dname "CN=QRCache"
+            {
+              echo "SIGN_KS_PASS=$pass"
+              echo "SIGN_ALIAS=qrcache"
+              echo "SIGN_KEY_PASS=$pass"
+            } >> "$GITHUB_ENV"
+          fi
+          echo "SIGN_KS=$ks" >> "$GITHUB_ENV"
+
+      - name: Build and sign APKs
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/out"
+          mkdir -p "$out"
+          # Notes come from the current CHANGELOG.md, not the one at each old commit.
+          cp CHANGELOG.md "$RUNNER_TEMP/CHANGELOG.md"
+          bt="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          head="$(git rev-parse HEAD)"
+
+          while IFS='|' read -r version sha build title; do
+            [ -z "$version" ] && continue
+            echo "::group::v$version ($build build of ${sha:0:7})"
+            git checkout --quiet --force "$sha"
+            git clean -fdxq
+            if [ "$build" = debug ]; then
+              ./gradlew --no-daemon assembleDebug
+              apk="$(ls app/build/outputs/apk/debug/*.apk | head -1)"
+            else
+              ./gradlew --no-daemon assembleRelease
+              apk="$(ls app/build/outputs/apk/release/*.apk | head -1)"
+            fi
+            "$bt/zipalign" -f -p 4 "$apk" "$RUNNER_TEMP/aligned.apk"
+            "$bt/apksigner" sign --ks "$SIGN_KS" --ks-pass env:SIGN_KS_PASS \
+              --ks-key-alias "$SIGN_ALIAS" --key-pass env:SIGN_KEY_PASS \
+              --out "$out/QRCache-v$version.apk" "$RUNNER_TEMP/aligned.apk"
+            "$bt/apksigner" verify "$out/QRCache-v$version.apk"
+
+            # The CHANGELOG section for this version, without its heading.
+            awk -v v="$version" '
+              $0 ~ "^## \\[" v "\\]" { on = 1; next }
+              on && /^## \[/ { exit }
+              on && /^\[[^]]+\]: / { exit }
+              on { print }
+            ' "$RUNNER_TEMP/CHANGELOG.md" > "$out/notes-$version.md"
+            {
+              echo
+              echo "### Install"
+              echo "Download **QRCache-v$version.apk** below and open it on your Android phone (Android 6.0 or newer)."
+              echo "Step-by-step guide: [Installing the APK](https://github.com/Eros-Byrne/QRCache#install)."
+              if [ "$version" != 1.0.0 ]; then
+                echo
+                echo "> This is an early milestone, kept to show how the app grew. For everyday use, get the [latest release](https://github.com/Eros-Byrne/QRCache/releases/latest)."
+              fi
+            } >> "$out/notes-$version.md"
+            echo "::endgroup::"
+          done <<< "$MILESTONES"
+
+          git checkout --quiet --force "$head"
+          rm -f "$RUNNER_TEMP/aligned.apk"
+          ls -la "$out"
+
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sign.jks"
+
+      - name: Upload APKs and notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: milestone-apks
+          path: ${{ runner.temp }}/out/
+
+      - name: Publish releases
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/out"
+          # Oldest first, so v1.0.0 ends up as the latest release.
+          while IFS='|' read -r version sha build title; do
+            [ -z "$version" ] && continue
+            tag="v$version"
+            latest=false
+            [ "$version" = 1.0.0 ] && latest=true
+            if gh release view "$tag" > /dev/null 2>&1; then
+              gh release edit "$tag" --title "$title" --notes-file "$out/notes-$version.md" --latest="$latest"
+              gh release upload "$tag" "$out/QRCache-v$version.apk" --clobber
+            else
+              gh release create "$tag" "$out/QRCache-v$version.apk" --target "$sha" \
+                --title "$title" --notes-file "$out/notes-$version.md" --latest="$latest"
+            fi
+          done <<< "$MILESTONES"
