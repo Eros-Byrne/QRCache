@@ -20,12 +20,9 @@ so you can reopen it later without hunting for the code again.
 
 <br>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/screens-dark.png">
-  <img src="docs/images/screens-light.png" alt="QRCache screens: the scanner, the History list, a saved scan's detail sheet, and Settings">
-</picture>
+<img src="docs/images/screenshots.png" width="860" alt="QRCache on a Pixel 8 Pro: the scanner with the QR code / Barcode switch, the History list, and Settings">
 
-<sub>Design mockups of the v1.0 screens. They follow the app's real layout, text and colors.</sub>
+<sub>Scanner, History and Settings on a Pixel 8 Pro.</sub>
 
 </div>
 
@@ -42,6 +39,7 @@ Most scanners forget a code the moment you close them. QRCache saves every scan 
 | | |
 |---|---|
 | ⚡ **Instant scanning** | The camera is ready as soon as the app opens. Works offline, with a haptic tap and the flashlight a tap away. |
+| 📦 **Barcodes too** | Flip the QR code / Barcode switch on the camera to read product and ticket barcodes (EAN, UPC, Code 128 and more). |
 | 🖼️ **Scan from an image** | Pick a photo or screenshot and QRCache reads the code in it. |
 | 🕘 **Automatic history** | Every scan is saved with the date and time, grouped by Today, Yesterday, This week and Earlier. Rescanning moves a code to the top instead of adding a copy. |
 | 🔎 **Search and filters** | Find a scan by name, content or website, or filter by Favorites, Links, Wi-Fi, Text and more. |
@@ -58,7 +56,7 @@ QRCache isn't on the Play Store yet, so you install it by downloading the APK (t
 
 **You need:** an Android phone running Android 6.0 or newer.
 
-1. **Download.** On your phone, open the [latest release](https://github.com/Eros-Byrne/QRCache/releases/latest) and tap **QRCache-v1.0.0.apk** under **Assets**. If your browser warns that the file might be harmful, tap **Download anyway**.
+1. **Download.** On your phone, open the [latest release](https://github.com/Eros-Byrne/QRCache/releases/latest) and tap the **QRCache .apk** file under **Assets**. If your browser warns that the file might be harmful, tap **Download anyway**.
 2. **Open it.** Tap the download notification, or find the file in your **Files** or **Downloads** app.
 3. **Allow the install.** The first time, Android asks for permission to install apps from your browser or Files app. Tap **Settings**, turn on **Allow from this source**, then go back.
    - On Android 6 and 7 this is a single switch instead: **Settings → Security → Unknown sources**.
@@ -71,7 +69,7 @@ QRCache isn't on the Play Store yet, so you install it by downloading the APK (t
 - **Updating:** download the newer APK and install it over the old one. Your history is kept.
 - **"App not installed" or "conflicts with an existing package":** the version you have was signed with a different key (for example, a build from Android Studio or from the Play Store). Export your history from **Settings → Export history (JSON)**, uninstall, install the new APK, then import the file.
 - **Older milestones:** every version from v0.2 is on the [Releases page](https://github.com/Eros-Byrne/QRCache/releases), if you'd like to see how the app grew.
-- **Install from a computer instead:** with [adb](https://developer.android.com/tools/adb) set up and USB debugging on, run `adb install QRCache-v1.0.0.apk`.
+- **Install from a computer instead:** with [adb](https://developer.android.com/tools/adb) set up and USB debugging on, run `adb install` followed by the APK's file name.
 
 </details>
 
