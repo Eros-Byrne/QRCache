@@ -2,28 +2,30 @@
 
 Each milestone ends with a build that works end to end.
 
-## v0.1: Skeleton
+**Status:** v0.1 to v1.0 are done, and v0.2 onward each have an APK on the [Releases page](https://github.com/Eros-Byrne/QRCache/releases). v1.1 is next.
+
+## v0.1: Skeleton ✓
 - Android project (Kotlin, Compose, version catalog, `minSdk 23`)
 - Theme tokens from [DESIGN.md](DESIGN.md), tab bar, empty screens
 - CI on GitHub Actions: build, lint, unit tests
 
-## v0.2: Scan
+## v0.2: Scan ✓
 - Camera permission flow
 - CameraX + ML Kit scanning, haptic + success animation
 - Scan from image
 - `ContentParser` for all v1 types with unit tests
 
-## v0.3: History
+## v0.3: History ✓
 - Room database, auto-save every scan, duplicate handling
 - History list with date groups, search, filter chips
 - Detail sheet with type-based actions, rename, delete, favorite
 
-## v0.4: Settings and polish
+## v0.4: Settings and polish ✓
 - Settings screen, theme, export/import, clear history
 - Animations, empty states, accessibility pass
 - Test on API 23, 26, 29, 33 and latest; Baseline Profile
 
-## v1.0: Play Store release (free)
+## v1.0: Play Store release (free) ✓
 - App icon (with Android 13 themed icon), Play Store icon and feature graphic, screenshots, store listing
 - Privacy policy published ([PRIVACY.md](PRIVACY.md))
 - Signed release bundle, internal → closed → production testing tracks ([RELEASING.md](RELEASING.md))

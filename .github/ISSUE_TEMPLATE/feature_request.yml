@@ -1,0 +1,14 @@
+name: Feature idea
+description: Suggest something QRCache could do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like QRCache to do?
+      description: Tell us the situation you're in and what would help.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Check the [roadmap](https://github.com/Eros-Byrne/QRCache/blob/main/docs/ROADMAP.md) first, it might already be planned.
