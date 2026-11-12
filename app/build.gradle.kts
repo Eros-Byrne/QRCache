@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.datastore.preferences)
 
-    // Camera + on-device QR decoding (bundled model: works offline, no Play services needed)
+    // Camera + on-device QR code and barcode decoding (bundled model: works offline, no Play services needed)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)

@@ -6,7 +6,7 @@
 
 **Scan once. Find it again.**
 
-A free, open-source QR scanner for Android that remembers every code you scan,<br>
+A free, open-source QR code and barcode scanner for Android that remembers every code you scan,<br>
 so you can reopen it later without hunting for the code again.
 
 [![Latest release](https://img.shields.io/github/v/release/Eros-Byrne/QRCache?label=release&color=0A84FF)](https://github.com/Eros-Byrne/QRCache/releases/latest)
@@ -25,6 +25,9 @@ so you can reopen it later without hunting for the code again.
 <sub>Scanner, History and Settings on a Pixel 8 Pro.</sub>
 
 </div>
+
+> [!NOTE]
+> **QRCache is finished.** v1.1.0 is the final release and has everything the app set out to do. No new features are planned, but the code is open under Apache 2.0 if you'd like to fork it and take it further.
 
 ---
 
@@ -52,7 +55,7 @@ Most scanners forget a code the moment you close them. QRCache saves every scan 
 
 ## Install
 
-QRCache isn't on the Play Store yet, so you install it by downloading the APK (the Android app file) from GitHub. This is called sideloading and takes about a minute.
+QRCache isn't on the Play Store, so you install it by downloading the APK (the Android app file) from GitHub. This is called sideloading and takes about a minute.
 
 **You need:** an Android phone running Android 6.0 or newer.
 
@@ -66,8 +69,8 @@ QRCache isn't on the Play Store yet, so you install it by downloading the APK (t
 <details>
 <summary><b>Updating, older versions and troubleshooting</b></summary>
 
-- **Updating:** download the newer APK and install it over the old one. Your history is kept.
-- **"App not installed" or "conflicts with an existing package":** the version you have was signed with a different key (for example, a build from Android Studio or from the Play Store). Export your history from **Settings → Export history (JSON)**, uninstall, install the new APK, then import the file.
+- **Updating from an older download:** the release APKs aren't signed with one fixed key, so a newer download usually won't install over an older one. Export your history from **Settings → Export history (JSON)**, uninstall the old version, install the new APK, then import the file.
+- **"App not installed" or "conflicts with an existing package":** the version you have was signed with a different key (for example, an older release or a build from Android Studio). Follow the same steps as above: export, uninstall, install, import.
 - **Older milestones:** every version from v0.2 is on the [Releases page](https://github.com/Eros-Byrne/QRCache/releases), if you'd like to see how the app grew.
 - **Install from a computer instead:** with [adb](https://developer.android.com/tools/adb) set up and USB debugging on, run `adb install` followed by the APK's file name.
 
@@ -101,13 +104,13 @@ To build a signed release yourself, see [docs/RELEASING.md](docs/RELEASING.md).
 
 | Version | What it added |
 |---|---|
-| [**v1.1**](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.1.0) | Barcode scanning with a QR code / Barcode switch on the camera, and an All / QR codes / Barcodes switch in History |
+| [**v1.1**](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.1.0) (final) | Barcode scanning with a QR code / Barcode switch on the camera, and an All / QR codes / Barcodes switch in History |
 | [v1.0](https://github.com/Eros-Byrne/QRCache/releases/tag/v1.0.0) | Optional page titles for links, themed icon, release builds and store listing |
 | [v0.4](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.4.0) | Settings, theme, export and import, clear history |
 | [v0.3](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.3.0) | Scan history with search, filters, rename, favorites and swipe actions |
 | [v0.2](https://github.com/Eros-Byrne/QRCache/releases/tag/v0.2.0) | Camera scanning, scan from image, smart actions |
 
-Full details are in the [changelog](CHANGELOG.md), and what's coming next is in the [roadmap](docs/ROADMAP.md): a home screen widget, more barcode formats, notes on scans, and later an iOS version.
+Full details are in the [changelog](CHANGELOG.md). The [roadmap](docs/ROADMAP.md) shows how the app was built, plus ideas that were left out, such as a home screen widget, notes on scans and an iOS version.
 
 ## Built with
 
@@ -120,13 +123,13 @@ Full details are in the [changelog](CHANGELOG.md), and what's coming next is in 
 | [FEATURES.md](docs/FEATURES.md) | What the app does, screen by screen |
 | [DESIGN.md](docs/DESIGN.md) | Look and feel: colors, type, motion, components |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Tech stack, code structure, data model |
-| [ROADMAP.md](docs/ROADMAP.md) | Milestones, done and planned |
+| [ROADMAP.md](docs/ROADMAP.md) | Milestones, and ideas that weren't built |
 | [PRIVACY.md](docs/PRIVACY.md) | Privacy policy |
 | [RELEASING.md](docs/RELEASING.md) | Signing, building and publishing |
 
 ## Contributing
 
-Bug reports, ideas and pull requests are welcome. Open an [issue](https://github.com/Eros-Byrne/QRCache/issues), or read [CONTRIBUTING.md](CONTRIBUTING.md) to get set up.
+The app is complete, but bug reports and small fixes are still welcome. Open an [issue](https://github.com/Eros-Byrne/QRCache/issues), or read [CONTRIBUTING.md](CONTRIBUTING.md) to get set up.
 
 ## License
 

@@ -1,19 +1,19 @@
 # Privacy Policy
 
-_Last updated: [date of first release]_
+_Last updated: 12 November 2026_
 
 QRCache is a free app. It is built to keep your data on your phone.
 
 ## What the app stores
 
-- The QR codes you scan, their titles, and the date and time you scanned them.
+- The QR codes and barcodes you scan, their titles, and the date and time you scanned them.
 - Your app settings.
 
 All of this is stored **only on your device**. We do not have a server and cannot see your history.
 
 ## Camera
 
-The app uses the camera only to read QR codes while the Scan screen is open. Images are processed on your device and are not saved or sent anywhere.
+The app uses the camera only to read QR codes and barcodes while the Scan screen is open. Images are processed on your device and are not saved or sent anywhere.
 
 ## Network
 

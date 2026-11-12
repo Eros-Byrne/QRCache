@@ -11,4 +11,4 @@ body:
       required: true
   - type: markdown
     attributes:
-      value: Check the [roadmap](https://github.com/Eros-Byrne/QRCache/blob/main/docs/ROADMAP.md) first, it might already be planned.
+      value: QRCache is finished and no new features are planned, but ideas are still welcome for anyone who forks it. The [roadmap](https://github.com/Eros-Byrne/QRCache/blob/main/docs/ROADMAP.md#ideas-not-built) lists ideas that were considered.

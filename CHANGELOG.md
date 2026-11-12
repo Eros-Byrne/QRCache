@@ -6,6 +6,11 @@ APKs for each version are on the [Releases page](https://github.com/Eros-Byrne/Q
 
 ## [Unreleased]
 
+No app changes. The project is finished and v1.1.0 is the final release.
+
+### Changed
+- Docs brought up to date for v1.1.0 and marked as a finished project: README, features, architecture, roadmap, privacy policy and contributing guide.
+
 ## [1.1.0] - 2026-11-10
 
 Barcode scanning, with History that keeps QR codes and barcodes apart.

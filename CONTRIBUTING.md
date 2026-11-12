@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping with QRCache. This guide covers how work gets done in this repo.
+Thanks for your interest in QRCache. The app is finished (v1.1.0 is the final release), so no new features are planned. Bug reports and small fixes are still welcome, and you're free to fork it and build on it under the Apache 2.0 license. This guide covers how work gets done in this repo.
 
 ## Setup
 
@@ -21,14 +21,13 @@ Short, present-tense summaries: `Add rename dialog to history item`, not `added 
 ## Code style
 
 - Kotlin official style. Run `./gradlew lintDebug testDebugUnitTest` before pushing (CI runs the same).
-- Compose: one screen per file, stateless composables where possible, previews for every component.
+- Compose: one screen per file, stateless composables where possible.
 - Follow [DESIGN.md](docs/DESIGN.md) for spacing, color and motion. Use the theme tokens, not hard-coded values.
 
 ## Tests
 
-- Unit tests for view models and data logic: `./gradlew test`
-- UI tests for core flows (scan → saved → reopen, rename, delete, search): `./gradlew connectedAndroidTest`
-- A change to the database schema needs a Room migration and a migration test.
+- Unit tests for parsing, history and data logic: `./gradlew testDebugUnitTest` (database tests run on Robolectric, so no device is needed)
+- A change to the database schema needs a Room migration and a migration test (see `DatabaseMigrationTest`).
 
 ## Pull request checklist
 
