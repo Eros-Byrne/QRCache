@@ -1,6 +1,6 @@
 package app.qrcache.scan
 
-/** What a QR code contains, parsed from its raw text. */
+/** What a scanned code contains, parsed from its raw text. */
 sealed interface ScanContent {
     val raw: String
 
@@ -75,7 +75,7 @@ sealed interface ScanContent {
 private const val TITLE_MAX = 60
 private const val HEX_DIGITS = "0123456789abcdefABCDEF"
 
-/** Turns the raw text of a QR code into typed [ScanContent]. Pure Kotlin, no Android imports. */
+/** Turns the raw text of a scanned code into typed [ScanContent]. Pure Kotlin, no Android imports. */
 object ContentParser {
 
     fun parse(raw: String): ScanContent {

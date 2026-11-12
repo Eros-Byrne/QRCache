@@ -4,6 +4,7 @@ QRCache is a fast, simple QR code scanner that remembers every code you scan, so
 
 <b>Scan in a snap</b>
 • Point your camera and it scans instantly, with a gentle tap when it finds a code
+• Reads product and ticket barcodes too (EAN, UPC, Code 128 and more)
 • Scan from a photo or screenshot
 • Flashlight for dark restaurants and hotel rooms
 • Works offline. Codes are read on your phone.
@@ -12,7 +13,7 @@ QRCache is a fast, simple QR code scanner that remembers every code you scan, so
 • Every scan is saved automatically, newest first
 • Grouped by Today, Yesterday, This week and Earlier
 • Search everything you've scanned
-• Filter by favorites, links, Wi-Fi, text and more
+• Filter by favorites, links, Wi-Fi, text and more, and keep QR codes and barcodes apart
 • Rename codes so they're easy to find ("Hotel breakfast menu")
 • Scanning the same code again moves it to the top instead of making a copy
 • Swipe to favorite or delete, with Undo
